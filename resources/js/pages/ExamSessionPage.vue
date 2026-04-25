@@ -36,7 +36,7 @@ onMounted(() => {
     ].join(':');
 
     store.loadExam(props.exam, key);
-    store.startSession(props.selectedMode);
+    store.activateMode(props.selectedMode);
 });
 
 const currentQuestionNumber = computed(() => store.session.questionPointer + 1);
@@ -51,6 +51,10 @@ const chooseAnswer = (question: ExamQuestion, answerId: number | null): void => 
     }
 
     store.answerQuestion(question.id, answerId);
+};
+
+const restartSession = (): void => {
+    store.startSession(props.selectedMode);
 };
 
 const answerColor = (question: ExamQuestion, answerId: number): 'default' | 'success' | 'error' | 'primary' => {
@@ -122,6 +126,9 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                         <div class="d-flex flex-wrap ga-3 mb-6">
                             <v-chip color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
                             <v-chip color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
+                            <v-btn color="warning" variant="tonal" prepend-icon="mdi-refresh" @click="restartSession">
+                                Zacznij od poczatku
+                            </v-btn>
                             <v-btn :href="backUrl" variant="text" prepend-icon="mdi-format-list-bulleted">Lista testow</v-btn>
                         </div>
 
@@ -206,6 +213,7 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                                         :class="['answer-item', answerColor(store.currentQuestion, answer.id)]"
                                         border
                                         rounded="lg"
+                                        @click="chooseAnswer(store.currentQuestion!, answer.id)"
                                     >
                                         <v-radio :label="answer.content" :value="answer.id" color="primary" />
                                     </v-sheet>

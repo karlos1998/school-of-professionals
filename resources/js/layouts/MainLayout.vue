@@ -24,6 +24,16 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
             <v-container class="py-6 px-4 px-md-8 layout-container content-container" fluid>
                 <slot />
             </v-container>
+            <footer class="site-footer">
+                <v-container class="px-4 px-md-8 layout-container" fluid>
+                    <p class="footer-text">
+                        Let's Code It! - Karol Sójka
+                        <a class="footer-link" href="https://letscode.it" target="_blank" rel="noopener noreferrer">
+                            letscode.it
+                        </a>
+                    </p>
+                </v-container>
+            </footer>
         </v-main>
     </v-app>
 </template>
@@ -77,5 +87,30 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
     color: #f4f8ff;
     font-size: clamp(1.2rem, 2vw, 1.9rem);
     line-height: 1.1;
+}
+
+.site-footer {
+    border-top: 1px solid rgba(16, 36, 60, 0.12);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(3px);
+}
+
+.footer-text {
+    margin: 0;
+    padding: 14px 0;
+    text-align: center;
+    color: #1a3f68;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.footer-link {
+    margin-left: 8px;
+    color: #0f4c81;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
 }
 </style>

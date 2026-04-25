@@ -114,6 +114,21 @@ export const useExamRunnerStore = defineStore(
             };
         };
 
+        const activateMode = (mode: ExamMode): void => {
+            if (!exam.value) {
+                return;
+            }
+
+            const hasQuestionOrder = session.value.questionOrder.length > 0;
+            const isSameMode = session.value.mode === mode;
+
+            if (hasQuestionOrder && isSameMode) {
+                return;
+            }
+
+            startSession(mode);
+        };
+
         const resetSession = (): void => {
             session.value = defaultSessionState();
         };
@@ -163,6 +178,7 @@ export const useExamRunnerStore = defineStore(
 
         return {
             exam,
+            examKey,
             session,
             orderedQuestions,
             currentQuestion,
@@ -171,6 +187,7 @@ export const useExamRunnerStore = defineStore(
             correctAnswersCount,
             isSessionFinished,
             loadExam,
+            activateMode,
             startSession,
             resetSession,
             answerQuestion,
@@ -182,6 +199,8 @@ export const useExamRunnerStore = defineStore(
         };
     },
     {
-        persist: true,
+        persist: {
+            pick: ['exam', 'examKey', 'session'],
+        },
     },
 );
