@@ -1,7 +1,21 @@
 <?php
 
-it('returns a successful response', function () {
-    $response = $this->get('/');
+it('renders exam flow pages', function () {
+    $this->seed();
 
-    $response->assertStatus(200);
+    $this->get('/')
+        ->assertStatus(200)
+        ->assertSee('WelcomePage');
+
+    $this->get('/egzaminy/wit')
+        ->assertStatus(200)
+        ->assertSee('AuthorityTestsPage');
+
+    $this->get('/egzaminy/wit/maszyny-drogowe')
+        ->assertStatus(200)
+        ->assertSee('ExamSessionPage');
+
+    $this->get('/egzaminy/udt/dzwigi-budowlane/i')
+        ->assertStatus(200)
+        ->assertSee('ExamSessionPage');
 });
