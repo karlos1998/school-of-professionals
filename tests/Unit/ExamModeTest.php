@@ -12,6 +12,6 @@ class ExamModeTest extends TestCase
         self::assertSame('Po kolei + feedback', ExamMode::Sequential->label());
         self::assertSame('Losowo + feedback', ExamMode::Random->label());
         self::assertSame('Tryb nauki', ExamMode::Study->label());
-        self::assertSame('Losowe 20 pytań', ExamMode::Exam20->label());
+        self::assertSame('Egzamin', ExamMode::Exam->label());
     }
 }

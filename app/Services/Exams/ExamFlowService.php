@@ -56,6 +56,7 @@ use App\Repositories\Contracts\ExamRepositoryInterface;
  *   class: array{name: string, slug: string}|null,
  *   questions: list<ExamQuestionPayload>
  * }
+ * @phpstan-type ExamConfigPayload array{questionLimit: int, passingThreshold: int}
  */
 class ExamFlowService
 {
@@ -174,7 +175,7 @@ class ExamFlowService
 
             $modeRoutes[] = [
                 'value' => $mode->value,
-                'label' => $mode->label(),
+                'label' => $this->modeLabel($mode),
                 'url' => route(
                     $classSlug !== null ? 'exam-flow.session.mode.with-class' : 'exam-flow.session.mode',
                     $params,
@@ -200,6 +201,7 @@ class ExamFlowService
      *   selectedModeLabel: string,
      *   modeSelectionUrl: string,
      *   backUrl: string,
+     *   examConfig: ExamConfigPayload,
      *   exam: ExamSessionPayload
      * }
      */
@@ -210,7 +212,7 @@ class ExamFlowService
         ?string $modeSlug = null,
     ): array {
         $variant = $this->resolveExamVariant($authoritySlug, $testSlug, $classSlug);
-        $selectedMode = ExamMode::tryFrom($modeSlug ?? '') ?? ExamMode::Sequential;
+        $selectedMode = $this->resolveMode($modeSlug);
         $fullExam = $this->examRepository->getExamWithQuestionsById($variant['exam']->id);
 
         if (!$fullExam instanceof Exam) {
@@ -234,9 +236,13 @@ class ExamFlowService
             'test' => $variant['test'],
             'selectedClass' => $variant['selectedClass'],
             'selectedMode' => $selectedMode->value,
-            'selectedModeLabel' => $selectedMode->label(),
+            'selectedModeLabel' => $this->modeLabel($selectedMode),
             'modeSelectionUrl' => $modeSelectionUrl,
             'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
+            'examConfig' => [
+                'questionLimit' => $this->examQuestionLimit(),
+                'passingThreshold' => $this->examPassingThreshold(),
+            ],
             'exam' => $examPayload,
         ];
     }
@@ -301,5 +307,37 @@ class ExamFlowService
         }
 
         return $authority;
+    }
+
+    private function resolveMode(?string $modeSlug): ExamMode
+    {
+        if ($modeSlug === 'exam20') {
+            return ExamMode::Exam;
+        }
+
+        return ExamMode::tryFrom($modeSlug ?? '') ?? ExamMode::Sequential;
+    }
+
+    private function modeLabel(ExamMode $mode): string
+    {
+        if ($mode === ExamMode::Exam) {
+            return sprintf('Egzamin (%d pytań)', $this->examQuestionLimit());
+        }
+
+        return $mode->label();
+    }
+
+    private function examQuestionLimit(): int
+    {
+        $configured = (int) config('exam.session.question_limit', 20);
+
+        return $configured > 0 ? $configured : 20;
+    }
+
+    private function examPassingThreshold(): int
+    {
+        $configured = (int) config('exam.session.passing_threshold', 16);
+
+        return $configured >= 0 ? $configured : 16;
     }
 }

@@ -61,12 +61,14 @@ class ExamFlowRoutingTest extends TestCase
     {
         $this->seed(ExamSeeder::class);
 
-        $this->get('/egzaminy/udt/dzwigi-budowlane/i/tryb/exam20')
+        $this->get('/egzaminy/udt/dzwigi-budowlane/i/tryb/exam')
             ->assertOk()
             ->assertInertia(fn (Assert $page): Assert => $page
                 ->component('ExamSessionPage')
-                ->where('selectedMode', 'exam20')
+                ->where('selectedMode', 'exam')
                 ->where('exam.class.slug', 'i')
+                ->where('examConfig.questionLimit', 20)
+                ->where('examConfig.passingThreshold', 16)
                 ->has('exam.questions', 30));
     }
 

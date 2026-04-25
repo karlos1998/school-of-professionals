@@ -2,7 +2,7 @@
 import { computed, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useExamRunnerStore } from '@/stores/examRunnerStore';
-import type { ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
+import type { ExamConfig, ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
 
 interface Props {
     authority: {
@@ -21,6 +21,7 @@ interface Props {
     selectedModeLabel: string;
     modeSelectionUrl: string;
     backUrl: string;
+    examConfig: ExamConfig;
     exam: ExamSessionPayload;
 }
 
@@ -35,15 +36,18 @@ onMounted(() => {
         props.selectedMode,
     ].join(':');
 
-    store.loadExam(props.exam, key);
+    store.loadExam(props.exam, key, props.examConfig);
     store.activateMode(props.selectedMode);
 });
 
 const currentQuestionNumber = computed(() => store.session.questionPointer + 1);
 const isStudyMode = computed(() => store.session.mode === 'study');
-const isExam20Mode = computed(() => store.session.mode === 'exam20');
+const isExamMode = computed(() => store.session.mode === 'exam');
 const isInstantMode = computed(() => ['sequential', 'random'].includes(store.session.mode));
-const shouldShowExam20Summary = computed(() => isExam20Mode.value && store.isSessionFinished);
+const shouldShowExamSummary = computed(() => isExamMode.value && store.isSessionFinished);
+const incorrectAnswersCount = computed(() => Math.max(store.totalQuestions - store.correctAnswersCount, 0));
+const isExamPassed = computed(() => store.correctAnswersCount >= props.examConfig.passingThreshold);
+const canGoNext = computed(() => store.canGoToNextQuestion());
 
 const chooseAnswer = (question: ExamQuestion, answerId: number | null): void => {
     if (answerId === null) {
@@ -65,7 +69,7 @@ const answerColor = (question: ExamQuestion, answerId: number): 'default' | 'suc
         return answerId === correctAnswerId ? 'success' : 'default';
     }
 
-    if (store.session.mode === 'exam20' && !store.isSessionFinished) {
+    if (store.session.mode === 'exam' && !store.isSessionFinished) {
         return answerId === selectedAnswerId ? 'primary' : 'default';
     }
 
@@ -154,9 +158,13 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                             </v-expansion-panels>
                         </template>
 
-                        <template v-else-if="shouldShowExam20Summary">
-                            <v-alert color="success" variant="tonal" class="mb-4">
+                        <template v-else-if="shouldShowExamSummary">
+                            <v-alert :color="isExamPassed ? 'success' : 'error'" variant="tonal" class="mb-4">
                                 Wynik koncowy: {{ store.correctAnswersCount }} / {{ store.totalQuestions }}
+                                <br>
+                                Poprawne: {{ store.correctAnswersCount }}, bledne: {{ incorrectAnswersCount }}
+                                <br>
+                                Status: {{ isExamPassed ? 'ZDANE' : 'NIEZDANE' }} (prog: {{ props.examConfig.passingThreshold }})
                             </v-alert>
 
                             <v-card
@@ -230,7 +238,9 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
                                 <div class="d-flex flex-wrap ga-3 mt-6 nav-actions">
                                     <v-btn prepend-icon="mdi-chevron-left" variant="outlined" @click="store.goToPreviousQuestion()">Poprzednie</v-btn>
-                                    <v-btn color="primary" append-icon="mdi-chevron-right" @click="store.goToNextQuestion()">Nastepne</v-btn>
+                                    <v-btn color="primary" append-icon="mdi-chevron-right" :disabled="!canGoNext" @click="store.goToNextQuestion()">
+                                        Nastepne
+                                    </v-btn>
                                 </div>
                             </div>
                         </template>

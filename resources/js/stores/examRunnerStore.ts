@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
-import { EXAM_20_SIZE, shuffle } from '@/utils/exam';
+import type { ExamConfig, ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
+import { shuffle } from '@/utils/exam';
 
 interface SessionState {
     mode: ExamMode;
@@ -24,6 +24,10 @@ export const useExamRunnerStore = defineStore(
     () => {
         const exam = ref<ExamSessionPayload | null>(null);
         const examKey = ref<string | null>(null);
+        const examConfig = ref<ExamConfig>({
+            questionLimit: 20,
+            passingThreshold: 16,
+        });
         const session = ref<SessionState>(defaultSessionState());
 
         const orderedQuestions = computed<ExamQuestion[]>(() => {
@@ -66,10 +70,19 @@ export const useExamRunnerStore = defineStore(
         });
 
         const isSessionFinished = computed<boolean>(() => {
-            return session.value.mode === 'exam20' && answeredCount.value === totalQuestions.value;
+            return session.value.mode === 'exam' && answeredCount.value === totalQuestions.value;
         });
 
-        const loadExam = (payload: ExamSessionPayload, key: string): void => {
+        const normalizeLegacyMode = (): void => {
+            if ((session.value.mode as unknown) === 'exam20') {
+                session.value.mode = 'exam';
+            }
+        };
+
+        const loadExam = (payload: ExamSessionPayload, key: string, config: ExamConfig): void => {
+            normalizeLegacyMode();
+            examConfig.value = config;
+
             if (examKey.value === key && exam.value?.id === payload.id) {
                 return;
             }
@@ -93,8 +106,8 @@ export const useExamRunnerStore = defineStore(
                 return shuffle(sortedIds);
             }
 
-            if (mode === 'exam20') {
-                return shuffle(sortedIds).slice(0, Math.min(EXAM_20_SIZE, sortedIds.length));
+            if (mode === 'exam') {
+                return shuffle(sortedIds).slice(0, Math.min(examConfig.value.questionLimit, sortedIds.length));
             }
 
             return sortedIds;
@@ -119,10 +132,20 @@ export const useExamRunnerStore = defineStore(
                 return;
             }
 
+            normalizeLegacyMode();
+
             const hasQuestionOrder = session.value.questionOrder.length > 0;
             const isSameMode = session.value.mode === mode;
 
             if (hasQuestionOrder && isSameMode) {
+                if (mode === 'exam') {
+                    const expectedCount = Math.min(examConfig.value.questionLimit, exam.value.questions.length);
+
+                    if (session.value.questionOrder.length !== expectedCount) {
+                        startSession(mode);
+                    }
+                }
+
                 return;
             }
 
@@ -136,7 +159,7 @@ export const useExamRunnerStore = defineStore(
         const answerQuestion = (questionId: number, answerId: number): void => {
             const alreadyAnswered = session.value.answersByQuestion[questionId] !== undefined;
 
-            if (alreadyAnswered && session.value.mode !== 'exam20') {
+            if (alreadyAnswered && session.value.mode !== 'exam') {
                 return;
             }
 
@@ -150,6 +173,15 @@ export const useExamRunnerStore = defineStore(
         const goToNextQuestion = (): void => {
             if (session.value.questionPointer >= totalQuestions.value - 1) {
                 return;
+            }
+
+            if (session.value.mode === 'exam') {
+                const currentQuestionId = session.value.questionOrder[session.value.questionPointer];
+                const currentAnswered = session.value.answersByQuestion[currentQuestionId] !== undefined;
+
+                if (!currentAnswered) {
+                    return;
+                }
             }
 
             session.value.questionPointer += 1;
@@ -176,9 +208,24 @@ export const useExamRunnerStore = defineStore(
             return question?.answers.find((answer) => answer.isCorrect)?.id ?? null;
         };
 
+        const canGoToNextQuestion = (): boolean => {
+            if (session.value.questionPointer >= totalQuestions.value - 1) {
+                return false;
+            }
+
+            if (session.value.mode !== 'exam') {
+                return true;
+            }
+
+            const currentQuestionId = session.value.questionOrder[session.value.questionPointer];
+
+            return session.value.answersByQuestion[currentQuestionId] !== undefined;
+        };
+
         return {
             exam,
             examKey,
+            examConfig,
             session,
             orderedQuestions,
             currentQuestion,
@@ -196,11 +243,12 @@ export const useExamRunnerStore = defineStore(
             isQuestionChecked,
             selectedAnswerId,
             correctAnswerId,
+            canGoToNextQuestion,
         };
     },
     {
         persist: {
-            pick: ['exam', 'examKey', 'session'],
+            pick: ['exam', 'examKey', 'examConfig', 'session'],
         },
     },
 );

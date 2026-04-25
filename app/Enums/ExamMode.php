@@ -7,7 +7,7 @@ enum ExamMode: string
     case Sequential = 'sequential';
     case Random = 'random';
     case Study = 'study';
-    case Exam20 = 'exam20';
+    case Exam = 'exam';
 
     public function label(): string
     {
@@ -15,7 +15,7 @@ enum ExamMode: string
             self::Sequential => 'Po kolei + feedback',
             self::Random => 'Losowo + feedback',
             self::Study => 'Tryb nauki',
-            self::Exam20 => 'Losowe 20 pytań',
+            self::Exam => 'Egzamin',
         };
     }
 }

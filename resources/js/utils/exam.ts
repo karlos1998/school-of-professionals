@@ -1,5 +1,3 @@
-export const EXAM_20_SIZE = 20;
-
 export const shuffle = <T>(source: T[]): T[] => {
     const copy = [...source];
 

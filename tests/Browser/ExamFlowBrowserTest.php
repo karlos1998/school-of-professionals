@@ -43,13 +43,13 @@ class ExamFlowBrowserTest extends DuskTestCase
         });
     }
 
-    public function test_user_can_start_exam20_mode_and_see_exam_session_shell(): void
+    public function test_user_can_start_exam_mode_and_see_exam_session_shell(): void
     {
         $this->browse(function (Browser $browser): void {
             $browser->visit('/egzaminy/wit/maszyny-drogowe')
                 ->waitForText('Wybierz tryb testu')
-                ->clickLink('Losowe 20 pytań')
-                ->waitForLocation('/egzaminy/wit/maszyny-drogowe/tryb/exam20')
+                ->clickLink('Egzamin (20 pytań)')
+                ->waitForLocation('/egzaminy/wit/maszyny-drogowe/tryb/exam')
                 ->waitForText('Pytanie 1 / 20')
                 ->assertSee('Pytania:');
         });

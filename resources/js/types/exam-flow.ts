@@ -1,4 +1,4 @@
-export type ExamMode = 'sequential' | 'random' | 'study' | 'exam20';
+export type ExamMode = 'sequential' | 'random' | 'study' | 'exam';
 
 export interface ExamAnswer {
     id: number;
@@ -25,4 +25,9 @@ export interface ExamSessionPayload {
         slug: string;
     } | null;
     questions: ExamQuestion[];
+}
+
+export interface ExamConfig {
+    questionLimit: number;
+    passingThreshold: number;
 }
