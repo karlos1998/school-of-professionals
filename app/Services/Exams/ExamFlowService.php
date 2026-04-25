@@ -50,7 +50,7 @@ class ExamFlowService
             $testsBySlug[$exam->category->slug][] = $exam;
         }
 
-        /** @var list<TestOption> $tests */
+        /** @var list<TestOptionDto> $tests */
         $tests = [];
 
         foreach ($testsBySlug as $testSlug => $items) {
@@ -167,7 +167,23 @@ class ExamFlowService
             ]),
         );
 
-        /** @var ExamSessionPayload $examPayload */
+        /**
+         * @var array{
+         *   id: int,
+         *   authoritySlug: string,
+         *   testSlug: string,
+         *   name: string,
+         *   description: string|null,
+         *   class: array{name: string, slug: string}|null,
+         *   questions: list<array{
+         *     id: int,
+         *     position: int,
+         *     content: string,
+         *     explanation: string|null,
+         *     answers: list<array{id: int, content: string, isCorrect: bool}>
+         *   }>
+         * } $examPayload
+         */
         $examPayload = ExamSessionResource::make($fullExam)->resolve();
 
         return new ExamSessionDto(
