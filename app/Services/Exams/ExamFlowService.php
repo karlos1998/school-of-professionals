@@ -3,85 +3,44 @@
 namespace App\Services\Exams;
 
 use App\Domain\Exams\Exceptions\ExamFlowException;
+use App\DTOs\ExamFlow\AuthorityLinkDto;
+use App\DTOs\ExamFlow\AuthorityMetaDto;
+use App\DTOs\ExamFlow\AuthorityTestsDto;
+use App\DTOs\ExamFlow\ClassOptionDto;
+use App\DTOs\ExamFlow\ExamSessionDto;
+use App\DTOs\ExamFlow\ExamVariantDto;
+use App\DTOs\ExamFlow\ModeRouteDto;
+use App\DTOs\ExamFlow\ModeSelectionDto;
+use App\DTOs\ExamFlow\TestOptionDto;
 use App\Enums\ExamMode;
 use App\Http\Resources\ExamFlow\ExamSessionResource;
 use App\Models\Exam;
 use App\Models\ExamAuthority;
 use App\Repositories\Contracts\ExamRepositoryInterface;
 
-/**
- * @phpstan-type AuthorityLink array{name: string, slug: string, url: string}
- * @phpstan-type AuthorityMeta array{name: string, slug: string}
- * @phpstan-type ClassOption array{name: string, slug: string, url: string}
- * @phpstan-type TestOption array{
- *   name: string,
- *   slug: string,
- *   description: string|null,
- *   questionCount: int,
- *   hasClassSelection: bool,
- *   classes: list<ClassOption>,
- *   url: string
- * }
- * @phpstan-type AuthorityTestsPayload array{
- *   authority: AuthorityMeta,
- *   tests: list<TestOption>
- * }
- * @phpstan-type ModeRoute array{value: string, label: string, url: string}
- * @phpstan-type ModeSelectionPayload array{
- *   authority: AuthorityMeta,
- *   test: array{name: string, slug: string},
- *   selectedClass: array{name: string, slug: string}|null,
- *   backUrl: string,
- *   modeRoutes: list<ModeRoute>
- * }
- * @phpstan-type ExamVariant array{
- *   exam: Exam,
- *   authority: AuthorityMeta,
- *   test: array{name: string, slug: string},
- *   selectedClass: array{name: string, slug: string}|null
- * }
- * @phpstan-type ExamQuestionPayload array{
- *   id: int,
- *   position: int,
- *   content: string,
- *   explanation: string|null,
- *   answers: list<array{id: int, content: string, isCorrect: bool}>
- * }
- * @phpstan-type ExamSessionPayload array{
- *   id: int,
- *   authoritySlug: string,
- *   testSlug: string,
- *   name: string,
- *   description: string|null,
- *   class: array{name: string, slug: string}|null,
- *   questions: list<ExamQuestionPayload>
- * }
- * @phpstan-type ExamConfigPayload array{questionLimit: int, passingThreshold: int}
- */
 class ExamFlowService
 {
     public function __construct(
         private readonly ExamRepositoryInterface $examRepository,
     ) {}
 
-    /** @return list<AuthorityLink> */
+    /** @return list<AuthorityLinkDto> */
     public function getAuthoritiesForWelcome(): array
     {
         $payload = [];
 
         foreach ($this->examRepository->getExamAuthorities() as $authority) {
-            $payload[] = [
-                'name' => $authority->name,
-                'slug' => $authority->slug,
-                'url' => route('exam-flow.authority-tests', ['authority' => $authority->slug]),
-            ];
+            $payload[] = new AuthorityLinkDto(
+                name: $authority->name,
+                slug: $authority->slug,
+                url: route('exam-flow.authority-tests', ['authority' => $authority->slug]),
+            );
         }
 
         return $payload;
     }
 
-    /** @return AuthorityTestsPayload */
-    public function getAuthorityTests(string $authoritySlug): array
+    public function getAuthorityTests(string $authoritySlug): AuthorityTestsDto
     {
         $authority = $this->resolveAuthority($authoritySlug);
 
@@ -104,56 +63,55 @@ class ExamFlowService
                     continue;
                 }
 
-                $classesBySlug[$exam->examClass->slug] = [
-                    'name' => $exam->examClass->name,
-                    'slug' => $exam->examClass->slug,
-                    'url' => route('exam-flow.mode-selection.with-class', [
+                $classesBySlug[$exam->examClass->slug] = new ClassOptionDto(
+                    name: $exam->examClass->name,
+                    slug: $exam->examClass->slug,
+                    url: route('exam-flow.mode-selection.with-class', [
                         'authority' => $authoritySlug,
                         'test' => $testSlug,
                         'class' => $exam->examClass->slug,
                     ]),
-                ];
+                );
             }
 
-            /** @var list<ClassOption> $classes */
+            /** @var list<ClassOptionDto> $classes */
             $classes = array_values($classesBySlug);
 
             usort(
                 $classes,
-                static fn (array $left, array $right): int => strcmp($left['name'], $right['name']),
+                static fn (ClassOptionDto $left, ClassOptionDto $right): int => strcmp($left->name, $right->name),
             );
 
-            $defaultExam = array_find($items->all(), static fn (Exam $exam): bool => $exam->examClass === null) ?? $first;
+            $defaultExam = array_find($items, static fn (Exam $exam): bool => $exam->examClass === null) ?? $first;
 
-            $tests[] = [
-                'name' => $first->category->name,
-                'slug' => $testSlug,
-                'description' => $first->description,
-                'questionCount' => $defaultExam->questions_count,
-                'hasClassSelection' => $classes !== [],
-                'classes' => $classes,
-                'url' => route('exam-flow.mode-selection', [
+            $tests[] = new TestOptionDto(
+                name: $first->category->name,
+                slug: $testSlug,
+                description: $first->description,
+                questionCount: $defaultExam->questions_count,
+                hasClassSelection: $classes !== [],
+                classes: $classes,
+                url: route('exam-flow.mode-selection', [
                     'authority' => $authoritySlug,
                     'test' => $testSlug,
                 ]),
-            ];
+            );
         }
 
-        return [
-            'authority' => [
-                'name' => $authority->name,
-                'slug' => $authority->slug,
-            ],
-            'tests' => $tests,
-        ];
+        return new AuthorityTestsDto(
+            authority: new AuthorityMetaDto(
+                name: $authority->name,
+                slug: $authority->slug,
+            ),
+            tests: $tests,
+        );
     }
 
-    /** @return ModeSelectionPayload */
-    public function getModeSelectionPayload(string $authoritySlug, string $testSlug, ?string $classSlug = null): array
+    public function getModeSelectionPayload(string $authoritySlug, string $testSlug, ?string $classSlug = null): ModeSelectionDto
     {
         $variant = $this->resolveExamVariant($authoritySlug, $testSlug, $classSlug);
 
-        /** @var list<ModeRoute> $modeRoutes */
+        /** @var list<ModeRouteDto> $modeRoutes */
         $modeRoutes = [];
 
         foreach (ExamMode::cases() as $mode) {
@@ -167,47 +125,34 @@ class ExamFlowService
                 $params['class'] = $classSlug;
             }
 
-            $modeRoutes[] = [
-                'value' => $mode->value,
-                'label' => $this->modeLabel($mode),
-                'url' => route(
+            $modeRoutes[] = new ModeRouteDto(
+                value: $mode->value,
+                label: $this->modeLabel($mode),
+                url: route(
                     $classSlug !== null ? 'exam-flow.session.mode.with-class' : 'exam-flow.session.mode',
                     $params,
                 ),
-            ];
+            );
         }
 
-        return [
-            'authority' => $variant['authority'],
-            'test' => $variant['test'],
-            'selectedClass' => $variant['selectedClass'],
-            'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
-            'modeRoutes' => $modeRoutes,
-        ];
+        return new ModeSelectionDto(
+            authority: $variant->authority,
+            test: $variant->test,
+            selectedClass: $variant->selectedClass,
+            backUrl: route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
+            modeRoutes: $modeRoutes,
+        );
     }
 
-    /**
-     * @return array{
-     *   authority: AuthorityMeta,
-     *   test: array{name: string, slug: string},
-     *   selectedClass: array{name: string, slug: string}|null,
-     *   selectedMode: string,
-     *   selectedModeLabel: string,
-     *   modeSelectionUrl: string,
-     *   backUrl: string,
-     *   examConfig: ExamConfigPayload,
-     *   exam: ExamSessionPayload
-     * }
-     */
     public function resolveExamSession(
         string $authoritySlug,
         string $testSlug,
         ?string $classSlug = null,
         ?string $modeSlug = null,
-    ): array {
+    ): ExamSessionDto {
         $variant = $this->resolveExamVariant($authoritySlug, $testSlug, $classSlug);
         $selectedMode = $this->resolveMode($modeSlug);
-        $fullExam = $this->examRepository->getExamWithQuestionsById($variant['exam']->id);
+        $fullExam = $this->examRepository->getExamWithQuestionsById($variant->exam->id);
 
         if (! $fullExam instanceof Exam) {
             throw new ExamFlowException('Exam session data not found.');
@@ -225,24 +170,23 @@ class ExamFlowService
         /** @var ExamSessionPayload $examPayload */
         $examPayload = ExamSessionResource::make($fullExam)->resolve();
 
-        return [
-            'authority' => $variant['authority'],
-            'test' => $variant['test'],
-            'selectedClass' => $variant['selectedClass'],
-            'selectedMode' => $selectedMode->value,
-            'selectedModeLabel' => $this->modeLabel($selectedMode),
-            'modeSelectionUrl' => $modeSelectionUrl,
-            'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
-            'examConfig' => [
+        return new ExamSessionDto(
+            authority: $variant->authority,
+            test: $variant->test,
+            selectedClass: $variant->selectedClass,
+            selectedMode: $selectedMode->value,
+            selectedModeLabel: $this->modeLabel($selectedMode),
+            modeSelectionUrl: $modeSelectionUrl,
+            backUrl: route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
+            examConfig: [
                 'questionLimit' => $this->questionLimit,
                 'passingThreshold' => $this->passingThreshold,
             ],
-            'exam' => $examPayload,
-        ];
+            exam: $examPayload,
+        );
     }
 
-    /** @return ExamVariant */
-    private function resolveExamVariant(string $authoritySlug, string $testSlug, ?string $classSlug = null): array
+    private function resolveExamVariant(string $authoritySlug, string $testSlug, ?string $classSlug = null): ExamVariantDto
     {
         $authority = $this->resolveAuthority($authoritySlug);
 
@@ -275,21 +219,21 @@ class ExamFlowService
             }
         }
 
-        return [
-            'exam' => $exam,
-            'authority' => [
-                'name' => $authority->name,
-                'slug' => $authority->slug,
-            ],
-            'test' => [
-                'name' => $exam->category->name,
-                'slug' => $exam->category->slug,
-            ],
-            'selectedClass' => $exam->examClass ? [
-                'name' => $exam->examClass->name,
-                'slug' => $exam->examClass->slug,
-            ] : null,
-        ];
+        return new ExamVariantDto(
+            exam: $exam,
+            authority: new AuthorityMetaDto(
+                name: $authority->name,
+                slug: $authority->slug,
+            ),
+            test: new AuthorityMetaDto(
+                name: $exam->category->name,
+                slug: $exam->category->slug,
+            ),
+            selectedClass: $exam->examClass ? new AuthorityMetaDto(
+                name: $exam->examClass->name,
+                slug: $exam->examClass->slug,
+            ) : null,
+        );
     }
 
     private function resolveAuthority(string $authoritySlug): ExamAuthority

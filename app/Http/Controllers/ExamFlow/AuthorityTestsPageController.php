@@ -23,7 +23,8 @@ class AuthorityTestsPageController extends Controller
             abort(404);
         }
 
-        return Inertia::render('AuthorityTestsPage', $payload + [
+        return Inertia::render('AuthorityTestsPage', [
+            ...((array) $payload),
             'homeUrl' => route('exam-flow.welcome'),
         ]);
     }

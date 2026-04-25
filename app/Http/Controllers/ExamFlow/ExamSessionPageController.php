@@ -32,6 +32,6 @@ class ExamSessionPageController extends Controller
             abort(404);
         }
 
-        return Inertia::render('ExamSessionPage', $payload);
+        return Inertia::render('ExamSessionPage', (array) $payload);
     }
 }

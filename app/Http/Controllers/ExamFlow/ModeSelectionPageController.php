@@ -31,6 +31,6 @@ class ModeSelectionPageController extends Controller
             abort(404);
         }
 
-        return Inertia::render('ModeSelectionPage', $payload);
+        return Inertia::render('ModeSelectionPage', (array) $payload);
     }
 }
