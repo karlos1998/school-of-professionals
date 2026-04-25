@@ -123,13 +123,7 @@ class ExamFlowService
                 static fn (array $left, array $right): int => strcmp($left['name'], $right['name']),
             );
 
-            $defaultExam = $first;
-            foreach ($items as $exam) {
-                if ($exam->examClass === null) {
-                    $defaultExam = $exam;
-                    break;
-                }
-            }
+            $defaultExam = array_find($items->all(), static fn (Exam $exam): bool => $exam->examClass === null) ?? $first;
 
             $tests[] = [
                 'name' => $first->category->name,
@@ -240,8 +234,8 @@ class ExamFlowService
             'modeSelectionUrl' => $modeSelectionUrl,
             'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
             'examConfig' => [
-                'questionLimit' => $this->examQuestionLimit(),
-                'passingThreshold' => $this->examPassingThreshold(),
+                'questionLimit' => $this->questionLimit,
+                'passingThreshold' => $this->passingThreshold,
             ],
             'exam' => $examPayload,
         ];
@@ -262,16 +256,16 @@ class ExamFlowService
 
         $exam = null;
         if ($classSlug !== null) {
-            $exam = $items->first(static fn (Exam $item): bool => $item->examClass?->slug === $classSlug);
+            $exam = array_find($items->all(), static fn (Exam $item): bool => $item->examClass?->slug === $classSlug);
 
             if (! $exam instanceof Exam) {
                 throw new ExamFlowException('Requested class variant not found.');
             }
         } else {
-            $exam = $items->first(static fn (Exam $item): bool => $item->examClass === null);
+            $exam = array_find($items->all(), static fn (Exam $item): bool => $item->examClass === null);
 
             if (! $exam instanceof Exam) {
-                $hasClasses = $items->contains(static fn (Exam $item): bool => $item->examClass !== null);
+                $hasClasses = array_any($items->all(), static fn (Exam $item): bool => $item->examClass !== null);
 
                 if ($hasClasses) {
                     throw new ExamFlowException('Class is required for this UDT test.');
@@ -300,7 +294,9 @@ class ExamFlowService
 
     private function resolveAuthority(string $authoritySlug): ExamAuthority
     {
-        $authority = $this->examRepository->getExamAuthorities()->firstWhere('slug', $authoritySlug);
+        $authorities = $this->examRepository->getExamAuthorities()->all();
+
+        $authority = array_find($authorities, fn ($item) => $item->slug === $authoritySlug);
 
         if (! $authority instanceof ExamAuthority) {
             throw new ExamFlowException('Authority not found.');
@@ -321,23 +317,25 @@ class ExamFlowService
     private function modeLabel(ExamMode $mode): string
     {
         if ($mode === ExamMode::Exam) {
-            return sprintf('Egzamin (%d pytań)', $this->examQuestionLimit());
+            return sprintf('Egzamin (%d pytań)', $this->questionLimit);
         }
 
         return $mode->label();
     }
 
-    private function examQuestionLimit(): int
-    {
-        $configured = (int) config('exam.session.question_limit', 20);
+    public int $questionLimit {
+        get {
+            $configured = (int) config('exam.session.question_limit', 20);
 
-        return $configured > 0 ? $configured : 20;
+            return $configured > 0 ? $configured : 20;
+        }
     }
 
-    private function examPassingThreshold(): int
-    {
-        $configured = (int) config('exam.session.passing_threshold', 16);
+    public int $passingThreshold {
+        get {
+            $configured = (int) config('exam.session.passing_threshold', 16);
 
-        return $configured >= 0 ? $configured : 16;
+            return $configured >= 0 ? $configured : 16;
+        }
     }
 }
