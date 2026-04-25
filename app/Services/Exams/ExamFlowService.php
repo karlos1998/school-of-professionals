@@ -4,6 +4,7 @@ namespace App\Services\Exams;
 
 use App\Domain\Exams\Exceptions\ExamFlowException;
 use App\Enums\ExamMode;
+use App\Http\Resources\ExamFlow\ExamSessionResource;
 use App\Models\Exam;
 use App\Repositories\Contracts\ExamRepositoryInterface;
 use Illuminate\Support\Collection;
@@ -150,34 +151,7 @@ class ExamFlowService
             'selectedModeLabel' => $selectedMode->label(),
             'modeSelectionUrl' => $modeSelectionUrl,
             'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
-            'exam' => [
-                'id' => $fullExam->id,
-                'authoritySlug' => $fullExam->authority->slug,
-                'testSlug' => $fullExam->category->slug,
-                'name' => $fullExam->name,
-                'description' => $fullExam->description,
-                'class' => $fullExam->examClass ? [
-                    'name' => $fullExam->examClass->name,
-                    'slug' => $fullExam->examClass->slug,
-                ] : null,
-                'questions' => $fullExam->questions
-                    ->map(fn ($question): array => [
-                        'id' => $question->id,
-                        'position' => $question->position,
-                        'content' => $question->content,
-                        'explanation' => $question->explanation,
-                        'answers' => $question->answers
-                            ->map(fn ($answer): array => [
-                                'id' => $answer->id,
-                                'content' => $answer->content,
-                                'isCorrect' => (bool) $answer->is_correct,
-                            ])
-                            ->values()
-                            ->all(),
-                    ])
-                    ->values()
-                    ->all(),
-            ],
+            'exam' => ExamSessionResource::make($fullExam)->resolve(),
         ];
     }
 
