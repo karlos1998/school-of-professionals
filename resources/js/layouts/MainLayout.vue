@@ -16,7 +16,7 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
                         >
                         <div>
                             <p class="brand-overline">Platforma Egzaminacyjna</p>
-                            <h1 class="brand-title">School Of Professionals</h1>
+                            <h1 class="brand-title">Testy UDT i WIT</h1>
                         </div>
                     </div>
                 </v-container>
