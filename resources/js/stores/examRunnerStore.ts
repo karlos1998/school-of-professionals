@@ -9,7 +9,6 @@ interface SessionState {
     questionPointer: number;
     answersByQuestion: Record<number, number>;
     checkedQuestionIds: number[];
-    completed: boolean;
 }
 
 const defaultSessionState = (): SessionState => ({
@@ -18,7 +17,6 @@ const defaultSessionState = (): SessionState => ({
     questionPointer: 0,
     answersByQuestion: {},
     checkedQuestionIds: [],
-    completed: false,
 });
 
 export const useExamRunnerStore = defineStore(
@@ -68,10 +66,6 @@ export const useExamRunnerStore = defineStore(
         });
 
         const isSessionFinished = computed<boolean>(() => {
-            return session.value.mode === 'exam20' ? session.value.completed : false;
-        });
-
-        const canFinalizeExam20 = computed<boolean>(() => {
             return session.value.mode === 'exam20' && answeredCount.value === totalQuestions.value;
         });
 
@@ -117,7 +111,6 @@ export const useExamRunnerStore = defineStore(
                 questionPointer: 0,
                 answersByQuestion: {},
                 checkedQuestionIds: [],
-                completed: false,
             };
         };
 
@@ -126,10 +119,6 @@ export const useExamRunnerStore = defineStore(
         };
 
         const answerQuestion = (questionId: number, answerId: number): void => {
-            if (session.value.completed) {
-                return;
-            }
-
             const alreadyAnswered = session.value.answersByQuestion[questionId] !== undefined;
 
             if (alreadyAnswered && session.value.mode !== 'exam20') {
@@ -141,14 +130,6 @@ export const useExamRunnerStore = defineStore(
             if (!session.value.checkedQuestionIds.includes(questionId)) {
                 session.value.checkedQuestionIds.push(questionId);
             }
-        };
-
-        const finalizeExam20 = (): void => {
-            if (!canFinalizeExam20.value) {
-                return;
-            }
-
-            session.value.completed = true;
         };
 
         const goToNextQuestion = (): void => {
@@ -189,12 +170,10 @@ export const useExamRunnerStore = defineStore(
             totalQuestions,
             correctAnswersCount,
             isSessionFinished,
-            canFinalizeExam20,
             loadExam,
             startSession,
             resetSession,
             answerQuestion,
-            finalizeExam20,
             goToNextQuestion,
             goToPreviousQuestion,
             isQuestionChecked,

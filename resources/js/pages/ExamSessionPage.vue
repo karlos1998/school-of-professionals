@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useExamRunnerStore } from '@/stores/examRunnerStore';
 import type { ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
+
+interface ModeRoute {
+    value: ExamMode;
+    label: string;
+    url: string;
+}
 
 interface Props {
     authority: {
@@ -17,6 +23,8 @@ interface Props {
         name: string;
         slug: string;
     } | null;
+    selectedMode: ExamMode;
+    modeRoutes: ModeRoute[];
     backUrl: string;
     exam: ExamSessionPayload;
 }
@@ -24,29 +32,23 @@ interface Props {
 const props = defineProps<Props>();
 const store = useExamRunnerStore();
 
-const mode = ref<ExamMode>('sequential');
-
-const modeOptions = [
-    { title: 'Po kolei + feedback', value: 'sequential', icon: 'mdi-order-numeric-ascending' },
-    { title: 'Losowo + feedback', value: 'random', icon: 'mdi-shuffle-variant' },
-    { title: 'Tryb nauki', value: 'study', icon: 'mdi-book-open-variant' },
-    { title: 'Losowe 20 pytań', value: 'exam20', icon: 'mdi-clipboard-check-outline' },
-] as const;
-
 onMounted(() => {
-    const key = [props.authority.slug, props.test.slug, props.selectedClass?.slug ?? 'no-class'].join(':');
-    store.loadExam(props.exam, key);
-});
+    const key = [
+        props.authority.slug,
+        props.test.slug,
+        props.selectedClass?.slug ?? 'no-class',
+        props.selectedMode,
+    ].join(':');
 
-const selectedModeLabel = computed(() => {
-    return modeOptions.find((option) => option.value === store.session.mode)?.title ?? 'Brak';
+    store.loadExam(props.exam, key);
+    store.startSession(props.selectedMode);
 });
 
 const currentQuestionNumber = computed(() => store.session.questionPointer + 1);
-const hasStarted = computed(() => store.totalQuestions > 0);
-const isStudyMode = computed(() => store.session.mode === 'study' && hasStarted.value);
-const isExam20Mode = computed(() => store.session.mode === 'exam20' && hasStarted.value);
-const isInstantMode = computed(() => ['sequential', 'random'].includes(store.session.mode) && hasStarted.value);
+const isStudyMode = computed(() => store.session.mode === 'study');
+const isExam20Mode = computed(() => store.session.mode === 'exam20');
+const isInstantMode = computed(() => ['sequential', 'random'].includes(store.session.mode));
+const shouldShowExam20Summary = computed(() => isExam20Mode.value && store.isSessionFinished);
 
 const chooseAnswer = (question: ExamQuestion, answerId: number | null): void => {
     if (answerId === null) {
@@ -93,6 +95,13 @@ const questionStatusText = (question: ExamQuestion): string => {
 
     return selectedAnswerId === correctAnswerId ? 'Poprawna odpowiedz' : 'Niepoprawna odpowiedz';
 };
+
+const questionResult = (question: ExamQuestion): 'success' | 'error' => {
+    const selectedAnswerId = store.selectedAnswerId(question.id);
+    const correctAnswerId = store.correctAnswerId(question.id);
+
+    return selectedAnswerId === correctAnswerId ? 'success' : 'error';
+};
 </script>
 
 <template>
@@ -108,110 +117,131 @@ const questionStatusText = (question: ExamQuestion): string => {
                                 <span v-if="selectedClass">(Klasa {{ selectedClass.name }})</span>
                             </h1>
                         </div>
-                        <div class="d-flex ga-2">
-                            <v-btn :href="backUrl" prepend-icon="mdi-arrow-left" variant="outlined">Lista testow</v-btn>
-                            <v-chip color="primary" prepend-icon="mdi-lightning-bolt" variant="flat">{{ selectedModeLabel }}</v-chip>
-                        </div>
+                        <v-btn :href="backUrl" prepend-icon="mdi-arrow-left" variant="outlined">Lista testow</v-btn>
                     </v-card-title>
 
                     <v-card-text>
                         <v-row class="mb-4">
-                            <v-col v-for="option in modeOptions" :key="option.value" cols="12" md="6">
-                                <v-sheet :class="['mode-item', { active: mode === option.value }]" border rounded="lg" @click="mode = option.value">
-                                    <div class="d-flex align-center ga-3">
-                                        <v-avatar color="primary" size="34" variant="tonal"><v-icon :icon="option.icon" /></v-avatar>
-                                        <strong>{{ option.title }}</strong>
+                            <v-col v-for="mode in modeRoutes" :key="mode.value" cols="12" md="6">
+                                <v-card
+                                    :class="['mode-item', { active: mode.value === selectedMode }]"
+                                    border
+                                    rounded="lg"
+                                    :href="mode.url"
+                                >
+                                    <div class="d-flex align-center justify-space-between ga-2">
+                                        <strong>{{ mode.label }}</strong>
+                                        <v-icon icon="mdi-chevron-right" />
                                     </div>
-                                </v-sheet>
+                                </v-card>
                             </v-col>
                         </v-row>
 
                         <div class="d-flex flex-wrap ga-3 mb-6">
-                            <v-btn color="primary" prepend-icon="mdi-play-circle" size="large" @click="store.startSession(mode)">Start</v-btn>
-                            <v-btn color="secondary" prepend-icon="mdi-restore" size="large" @click="store.resetSession()">Reset</v-btn>
-                            <v-chip v-if="hasStarted" color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
-                            <v-chip v-if="hasStarted" color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
+                            <v-chip color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
+                            <v-chip color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
                         </div>
 
-                        <v-alert v-if="!hasStarted" border="start" color="info" variant="tonal">
-                            Wybierz tryb i kliknij Start, aby rozpoczac rozwiazywanie testu.
-                        </v-alert>
+                        <template v-if="isStudyMode">
+                            <v-expansion-panels variant="accordion">
+                                <v-expansion-panel v-for="question in store.orderedQuestions" :key="question.id" elevation="0">
+                                    <v-expansion-panel-title>Pytanie {{ question.position }}</v-expansion-panel-title>
+                                    <v-expansion-panel-text>
+                                        <p class="font-weight-medium mb-4">{{ question.content }}</p>
+                                        <v-list density="compact">
+                                            <v-list-item v-for="answer in question.answers" :key="answer.id" :base-color="answerColor(question, answer.id)">
+                                                <template #prepend>
+                                                    <v-icon
+                                                        :color="answer.isCorrect ? 'success' : 'default'"
+                                                        :icon="answer.isCorrect ? 'mdi-check-circle' : 'mdi-circle-outline'"
+                                                    />
+                                                </template>
+                                                <v-list-item-title>{{ answer.content }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-expansion-panel-text>
+                                </v-expansion-panel>
+                            </v-expansion-panels>
+                        </template>
 
-                        <template v-else>
-                            <template v-if="isStudyMode">
-                                <v-expansion-panels variant="accordion">
-                                    <v-expansion-panel v-for="question in store.orderedQuestions" :key="question.id" elevation="0">
-                                        <v-expansion-panel-title>Pytanie {{ question.position }}</v-expansion-panel-title>
-                                        <v-expansion-panel-text>
-                                            <p class="font-weight-medium mb-4">{{ question.content }}</p>
-                                            <v-list density="compact">
-                                                <v-list-item v-for="answer in question.answers" :key="answer.id" :base-color="answerColor(question, answer.id)">
-                                                    <template #prepend>
-                                                        <v-icon
-                                                            :color="answer.isCorrect ? 'success' : 'default'"
-                                                            :icon="answer.isCorrect ? 'mdi-check-circle' : 'mdi-circle-outline'"
-                                                        />
-                                                    </template>
-                                                    <v-list-item-title>{{ answer.content }}</v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-expansion-panel-text>
-                                    </v-expansion-panel>
-                                </v-expansion-panels>
-                            </template>
+                        <template v-else-if="shouldShowExam20Summary">
+                            <v-alert color="success" variant="tonal" class="mb-4">
+                                Wynik koncowy: {{ store.correctAnswersCount }} / {{ store.totalQuestions }}
+                            </v-alert>
 
-                            <template v-else-if="store.currentQuestion">
-                                <div class="question-shell">
-                                    <div class="d-flex justify-space-between align-center mb-3">
-                                        <strong>Pytanie {{ currentQuestionNumber }} / {{ store.totalQuestions }}</strong>
-                                        <v-chip size="small" variant="outlined">
-                                            Odpowiedziano: {{ store.answeredCount }}/{{ store.totalQuestions }}
-                                        </v-chip>
-                                    </div>
+                            <v-card
+                                v-for="question in store.orderedQuestions"
+                                :key="question.id"
+                                class="summary-card mb-4"
+                                :color="questionResult(question)"
+                                variant="tonal"
+                            >
+                                <v-card-title class="d-flex justify-space-between align-center ga-2">
+                                    <span>Pytanie {{ question.position }}</span>
+                                    <v-chip :color="questionResult(question)" size="small" variant="flat">
+                                        {{ questionResult(question) === 'success' ? 'Poprawnie' : 'Blednie' }}
+                                    </v-chip>
+                                </v-card-title>
+                                <v-card-text>
+                                    <p class="font-weight-medium mb-3">{{ question.content }}</p>
 
-                                    <v-progress-linear :model-value="(store.answeredCount / store.totalQuestions) * 100" color="primary" height="10" rounded class="mb-5" />
-                                    <p class="text-h6 mb-5">{{ store.currentQuestion.content }}</p>
-
-                                    <v-radio-group :model-value="store.selectedAnswerId(store.currentQuestion.id)" @update:model-value="(value) => chooseAnswer(store.currentQuestion!, value)">
-                                        <v-sheet
-                                            v-for="answer in store.currentQuestion.answers"
+                                    <v-list density="compact" class="bg-transparent">
+                                        <v-list-item
+                                            v-for="answer in question.answers"
                                             :key="answer.id"
-                                            :class="['answer-item', answerColor(store.currentQuestion, answer.id)]"
-                                            border
-                                            rounded="lg"
+                                            :base-color="answerColor(question, answer.id)"
                                         >
-                                            <v-radio :label="answer.content" :value="answer.id" color="primary" />
-                                        </v-sheet>
-                                    </v-radio-group>
+                                            <template #prepend>
+                                                <v-icon
+                                                    :icon="answer.id === store.correctAnswerId(question.id) ? 'mdi-check-circle' : 'mdi-circle-outline'"
+                                                    :color="answer.id === store.correctAnswerId(question.id) ? 'success' : 'default'"
+                                                />
+                                            </template>
+                                            <v-list-item-title>{{ answer.content }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-card-text>
+                            </v-card>
+                        </template>
 
-                                    <v-alert
-                                        v-if="isInstantMode"
-                                        :color="store.selectedAnswerId(store.currentQuestion.id) === store.correctAnswerId(store.currentQuestion.id) ? 'success' : 'error'"
-                                        variant="tonal"
-                                        class="mt-4"
-                                    >
-                                        {{ questionStatusText(store.currentQuestion) }}
-                                    </v-alert>
-
-                                    <v-alert v-if="isExam20Mode && store.isSessionFinished" color="success" variant="tonal" class="mt-4">
-                                        Wynik koncowy: {{ store.correctAnswersCount }} / {{ store.totalQuestions }}
-                                    </v-alert>
-
-                                    <div class="d-flex flex-wrap ga-3 mt-6">
-                                        <v-btn prepend-icon="mdi-chevron-left" variant="outlined" @click="store.goToPreviousQuestion()">Poprzednie</v-btn>
-                                        <v-btn color="primary" append-icon="mdi-chevron-right" @click="store.goToNextQuestion()">Nastepne</v-btn>
-                                        <v-btn
-                                            v-if="isExam20Mode && !store.isSessionFinished"
-                                            color="secondary"
-                                            :disabled="!store.canFinalizeExam20"
-                                            prepend-icon="mdi-flag-checkered"
-                                            @click="store.finalizeExam20()"
-                                        >
-                                            Zakoncz test i pokaz wynik
-                                        </v-btn>
-                                    </div>
+                        <template v-else-if="store.currentQuestion">
+                            <div class="question-shell">
+                                <div class="d-flex justify-space-between align-center mb-3 ga-2 flex-wrap">
+                                    <strong>Pytanie {{ currentQuestionNumber }} / {{ store.totalQuestions }}</strong>
+                                    <v-chip size="small" variant="outlined">
+                                        Odpowiedziano: {{ store.answeredCount }}/{{ store.totalQuestions }}
+                                    </v-chip>
                                 </div>
-                            </template>
+
+                                <v-progress-linear :model-value="(store.answeredCount / store.totalQuestions) * 100" color="primary" height="10" rounded class="mb-5" />
+                                <p class="text-h6 mb-5">{{ store.currentQuestion.content }}</p>
+
+                                <v-radio-group :model-value="store.selectedAnswerId(store.currentQuestion.id)" @update:model-value="(value) => chooseAnswer(store.currentQuestion!, value)">
+                                    <v-sheet
+                                        v-for="answer in store.currentQuestion.answers"
+                                        :key="answer.id"
+                                        :class="['answer-item', answerColor(store.currentQuestion, answer.id)]"
+                                        border
+                                        rounded="lg"
+                                    >
+                                        <v-radio :label="answer.content" :value="answer.id" color="primary" />
+                                    </v-sheet>
+                                </v-radio-group>
+
+                                <v-alert
+                                    v-if="isInstantMode"
+                                    :color="store.selectedAnswerId(store.currentQuestion.id) === store.correctAnswerId(store.currentQuestion.id) ? 'success' : 'error'"
+                                    variant="tonal"
+                                    class="mt-4"
+                                >
+                                    {{ questionStatusText(store.currentQuestion) }}
+                                </v-alert>
+
+                                <div class="d-flex flex-wrap ga-3 mt-6 nav-actions">
+                                    <v-btn prepend-icon="mdi-chevron-left" variant="outlined" @click="store.goToPreviousQuestion()">Poprzednie</v-btn>
+                                    <v-btn color="primary" append-icon="mdi-chevron-right" @click="store.goToNextQuestion()">Nastepne</v-btn>
+                                </div>
+                            </div>
                         </template>
                     </v-card-text>
                 </v-card>
@@ -222,7 +252,7 @@ const questionStatusText = (question: ExamQuestion): string => {
 
 <style scoped>
 .panel-card {
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.96);
 }
 
 .mode-item,
@@ -253,5 +283,15 @@ const questionStatusText = (question: ExamQuestion): string => {
     border: 1px solid rgba(15, 76, 129, 0.15);
     border-radius: 16px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.9));
+}
+
+.summary-card {
+    border: 1px solid rgba(15, 76, 129, 0.14);
+}
+
+@media (max-width: 700px) {
+    .nav-actions :deep(.v-btn) {
+        flex: 1 1 100%;
+    }
 }
 </style>

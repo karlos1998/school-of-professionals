@@ -6,9 +6,9 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
     <v-app class="main-shell">
         <v-main>
             <div class="hero-backdrop" />
-            <v-container class="py-8 px-4 px-md-8 layout-container" fluid>
-                <header class="d-flex flex-column flex-md-row align-start align-md-center justify-space-between ga-4 mb-8">
-                    <div class="d-flex align-center ga-4">
+            <header class="topbar">
+                <v-container class="px-4 px-md-8 layout-container" fluid>
+                    <div class="d-flex align-center ga-4 py-4">
                         <img
                             alt="Szkola Zawodowcow"
                             class="brand-logo"
@@ -19,11 +19,9 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
                             <h1 class="brand-title">School Of Professionals</h1>
                         </div>
                     </div>
-                    <v-chip color="secondary" prepend-icon="mdi-shield-check" size="large" variant="flat">
-                        Tryb bez logowania
-                    </v-chip>
-                </header>
-
+                </v-container>
+            </header>
+            <v-container class="py-6 px-4 px-md-8 layout-container content-container" fluid>
                 <slot />
             </v-container>
         </v-main>
@@ -51,22 +49,32 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
     margin: 0 auto;
 }
 
+.content-container {
+    min-height: calc(100vh - 100px);
+}
+
+.topbar {
+    background: linear-gradient(145deg, #10243c 0%, #143456 60%, #1a4a78 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 10px 25px rgba(9, 23, 38, 0.2);
+}
+
 .brand-logo {
     width: 180px;
     max-width: 45vw;
-    filter: drop-shadow(0 8px 20px rgba(15, 76, 129, 0.18));
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
 }
 
 .brand-overline {
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    color: #4d6a88;
+    color: rgba(233, 241, 252, 0.8);
     font-size: 0.74rem;
     margin-bottom: 4px;
 }
 
 .brand-title {
-    color: #0f3557;
+    color: #f4f8ff;
     font-size: clamp(1.2rem, 2vw, 1.9rem);
     line-height: 1.1;
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ExamFlow;
 use App\Domain\Exams\Exceptions\ExamFlowException;
 use App\Http\Controllers\Controller;
 use App\Services\Exams\ExamFlowService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,13 +16,18 @@ class ExamSessionPageController extends Controller
         private readonly ExamFlowService $examFlowService,
     ) {}
 
-    public function __invoke(string $authority, string $test, ?string $class = null): Response|RedirectResponse
+    public function __invoke(
+        Request $request,
+        string $authority,
+        string $test,
+    ): Response|RedirectResponse
     {
         try {
             $payload = $this->examFlowService->resolveExamSession(
                 authoritySlug: $authority,
                 testSlug: $test,
-                classSlug: $class,
+                classSlug: $request->route('class'),
+                modeSlug: $request->route('mode'),
             );
         } catch (ExamFlowException) {
             abort(404);

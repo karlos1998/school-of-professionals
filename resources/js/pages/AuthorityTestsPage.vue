@@ -120,4 +120,10 @@ const openTest = (test: TestItem): void => {
     border-color: rgba(15, 76, 129, 0.42);
     transform: translateY(-2px);
 }
+
+@media (max-width: 700px) {
+    .test-card {
+        min-height: auto;
+    }
+}
 </style>

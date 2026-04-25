@@ -14,7 +14,7 @@ defineProps<Props>();
 
 <template>
     <MainLayout>
-        <v-row justify="center">
+        <v-row justify="center" align="center" class="welcome-row">
             <v-col cols="12" md="10" lg="8">
                 <v-card class="panel-card" elevation="8" rounded="xl">
                     <v-card-title class="text-h5 font-weight-bold">Witaj w platformie testowej</v-card-title>
@@ -45,6 +45,10 @@ defineProps<Props>();
     background: rgba(255, 255, 255, 0.94);
 }
 
+.welcome-row {
+    min-height: calc(100vh - 180px);
+}
+
 .authority-card {
     border: 1px solid rgba(15, 76, 129, 0.2);
     transition: all 0.2s ease;
@@ -53,5 +57,11 @@ defineProps<Props>();
 .authority-card:hover {
     transform: translateY(-2px);
     border-color: rgba(15, 76, 129, 0.45);
+}
+
+@media (max-width: 700px) {
+    .welcome-row {
+        min-height: calc(100vh - 150px);
+    }
 }
 </style>

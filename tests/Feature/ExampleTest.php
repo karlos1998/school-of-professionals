@@ -15,7 +15,15 @@ it('renders exam flow pages', function () {
         ->assertStatus(200)
         ->assertSee('ExamSessionPage');
 
+    $this->get('/egzaminy/wit/maszyny-drogowe/tryb/exam20')
+        ->assertStatus(200)
+        ->assertSee('ExamSessionPage');
+
     $this->get('/egzaminy/udt/dzwigi-budowlane/i')
+        ->assertStatus(200)
+        ->assertSee('ExamSessionPage');
+
+    $this->get('/egzaminy/udt/dzwigi-budowlane/i/tryb/random')
         ->assertStatus(200)
         ->assertSee('ExamSessionPage');
 });

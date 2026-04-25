@@ -2,6 +2,7 @@
 
 namespace App\Services\Exams;
 
+use App\Enums\ExamMode;
 use App\Domain\Exams\Exceptions\ExamFlowException;
 use App\Models\Exam;
 use App\Repositories\Contracts\ExamRepositoryInterface;
@@ -81,7 +82,12 @@ class ExamFlowService
         ];
     }
 
-    public function resolveExamSession(string $authoritySlug, string $testSlug, ?string $classSlug = null): array
+    public function resolveExamSession(
+        string $authoritySlug,
+        string $testSlug,
+        ?string $classSlug = null,
+        ?string $modeSlug = null,
+    ): array
     {
         $testsPayload = $this->getAuthorityTests($authoritySlug);
 
@@ -127,6 +133,32 @@ class ExamFlowService
             throw new ExamFlowException('Exam session data not found.');
         }
 
+        $selectedMode = ExamMode::tryFrom($modeSlug ?? ExamMode::Sequential->value) ?? ExamMode::Sequential;
+
+        $modeRoutes = collect(ExamMode::cases())
+            ->map(function (ExamMode $mode) use ($authoritySlug, $testSlug, $classSlug): array {
+                $routeParams = [
+                    'authority' => $authoritySlug,
+                    'test' => $testSlug,
+                    'mode' => $mode->value,
+                ];
+
+                if ($classSlug !== null) {
+                    $routeParams['class'] = $classSlug;
+                }
+
+                return [
+                    'value' => $mode->value,
+                    'label' => $mode->label(),
+                    'url' => route(
+                        $classSlug !== null ? 'exam-flow.session.mode.with-class' : 'exam-flow.session.mode',
+                        $routeParams,
+                    ),
+                ];
+            })
+            ->values()
+            ->all();
+
         return [
             'authority' => $testsPayload['authority'],
             'test' => [
@@ -137,6 +169,8 @@ class ExamFlowService
                 'name' => $fullExam->examClass->name,
                 'slug' => $fullExam->examClass->slug,
             ] : null,
+            'selectedMode' => $selectedMode->value,
+            'modeRoutes' => $modeRoutes,
             'backUrl' => route('exam-flow.authority-tests', ['authority' => $authoritySlug]),
             'exam' => [
                 'id' => $fullExam->id,
