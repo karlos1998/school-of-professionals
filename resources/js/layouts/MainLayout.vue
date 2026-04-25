@@ -26,12 +26,9 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
             </v-container>
             <footer class="site-footer">
                 <v-container class="px-4 px-md-8 layout-container" fluid>
-                    <p class="footer-text">
+                    <a class="footer-link" href="https://letscode.it" target="_blank" rel="noopener noreferrer">
                         Let's Code It! - Karol Sójka
-                        <a class="footer-link" href="https://letscode.it" target="_blank" rel="noopener noreferrer">
-                            letscode.it
-                        </a>
-                    </p>
+                    </a>
                 </v-container>
             </footer>
         </v-main>
@@ -49,9 +46,34 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
     inset: 0;
     z-index: -1;
     background:
-        radial-gradient(circle at 12% 15%, rgba(47, 127, 196, 0.2), transparent 45%),
-        radial-gradient(circle at 85% 10%, rgba(248, 180, 0, 0.15), transparent 35%),
-        linear-gradient(160deg, #eff4ff 0%, #f6f9ff 42%, #fdf6e7 100%);
+        radial-gradient(circle at 10% 12%, rgba(244, 199, 90, 0.2), transparent 34%),
+        radial-gradient(circle at 84% 18%, rgba(16, 36, 60, 0.2), transparent 33%),
+        linear-gradient(167deg, #f5f5f6 0%, #f0f1f3 44%, #ebedf0 100%);
+}
+
+.hero-backdrop::before,
+.hero-backdrop::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    border: 2px solid rgba(227, 185, 79, 0.7);
+    opacity: 0.72;
+}
+
+.hero-backdrop::before {
+    width: 170px;
+    height: 170px;
+    left: 6%;
+    top: 26%;
+    clip-path: inset(0 0 44% 44%);
+}
+
+.hero-backdrop::after {
+    width: 150px;
+    height: 150px;
+    right: 8%;
+    top: 58%;
+    clip-path: inset(42% 42% 0 0);
 }
 
 .layout-container {
@@ -64,9 +86,9 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .topbar {
-    background: linear-gradient(145deg, #10243c 0%, #143456 60%, #1a4a78 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 10px 25px rgba(9, 23, 38, 0.2);
+    background: linear-gradient(145deg, #0c1016 0%, #101b2c 52%, #1d3049 100%);
+    border-bottom: 1px solid rgba(227, 185, 79, 0.48);
+    box-shadow: 0 10px 25px rgba(7, 12, 19, 0.36);
 }
 
 .brand-logo {
@@ -78,7 +100,7 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 .brand-overline {
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    color: rgba(233, 241, 252, 0.8);
+    color: rgba(236, 198, 98, 0.9);
     font-size: 0.74rem;
     margin-bottom: 4px;
 }
@@ -90,27 +112,23 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .site-footer {
-    border-top: 1px solid rgba(16, 36, 60, 0.12);
-    background: rgba(255, 255, 255, 0.72);
+    border-top: 1px solid rgba(226, 182, 75, 0.35);
+    background: linear-gradient(145deg, rgba(17, 27, 43, 0.96), rgba(26, 41, 62, 0.96));
     backdrop-filter: blur(3px);
 }
 
-.footer-text {
-    margin: 0;
+.footer-link {
+    display: block;
     padding: 14px 0;
     text-align: center;
-    color: #1a3f68;
+    color: #f0d188;
     font-weight: 600;
     font-size: 0.92rem;
-}
-
-.footer-link {
-    margin-left: 8px;
-    color: #0f4c81;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-    text-decoration: underline;
+    color: #ffdd8b;
 }
 </style>

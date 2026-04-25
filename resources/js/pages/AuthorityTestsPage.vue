@@ -86,12 +86,26 @@ const openTest = (test: TestItem): void => {
         </v-row>
 
         <v-dialog v-model="classDialog" max-width="460">
-            <v-card rounded="lg">
-                <v-card-title>Wybierz klase: {{ selectedTestName }}</v-card-title>
+            <v-card class="class-dialog" rounded="xl">
+                <v-card-title class="class-dialog__title">
+                    <span>Wybierz klase: {{ selectedTestName }}</span>
+                </v-card-title>
                 <v-card-text>
-                    <v-list>
-                        <v-list-item v-for="classItem in classOptions" :key="classItem.slug" :href="classItem.url" rounded="lg">
+                    <v-list class="class-list bg-transparent">
+                        <v-list-item
+                            v-for="classItem in classOptions"
+                            :key="classItem.slug"
+                            :href="classItem.url"
+                            rounded="lg"
+                            class="class-item"
+                        >
+                            <template #prepend>
+                                <v-icon icon="mdi-medal-outline" color="secondary" />
+                            </template>
                             <v-list-item-title>Klasa {{ classItem.name }}</v-list-item-title>
+                            <template #append>
+                                <v-icon icon="mdi-chevron-right" />
+                            </template>
                         </v-list-item>
                     </v-list>
                 </v-card-text>
@@ -106,7 +120,11 @@ const openTest = (test: TestItem): void => {
 
 <style scoped>
 .panel-card {
-    background: rgba(255, 255, 255, 0.94);
+    background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(250, 246, 235, 0.9));
+    border: 1px solid rgba(221, 176, 68, 0.52);
+    box-shadow:
+        0 14px 38px rgba(14, 29, 48, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.84);
 }
 
 .test-card {
@@ -114,11 +132,41 @@ const openTest = (test: TestItem): void => {
     min-height: 150px;
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 1px solid rgba(214, 169, 62, 0.45);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.97), rgba(250, 246, 236, 0.82));
 }
 
 .test-card:hover {
-    border-color: rgba(15, 76, 129, 0.42);
-    transform: translateY(-2px);
+    border-color: rgba(188, 145, 44, 0.88);
+    box-shadow: 0 12px 26px rgba(19, 31, 45, 0.12);
+    transform: translateY(-2px) scale(1.01);
+}
+
+.class-dialog {
+    border: 1px solid rgba(220, 176, 69, 0.58);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(249, 245, 234, 0.96));
+}
+
+.class-dialog__title {
+    background: linear-gradient(145deg, #0f1722, #18283b);
+    color: #f3d68b;
+    border-bottom: 1px solid rgba(218, 174, 67, 0.42);
+}
+
+.class-list {
+    gap: 10px;
+    display: grid;
+}
+
+.class-item {
+    border: 1px solid rgba(217, 171, 62, 0.42);
+    transition: all 0.2s ease;
+}
+
+.class-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(190, 146, 44, 0.8);
+    background: rgba(255, 255, 255, 0.75);
 }
 
 @media (max-width: 700px) {

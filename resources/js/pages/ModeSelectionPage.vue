@@ -64,18 +64,24 @@ defineProps<Props>();
 
 <style scoped>
 .panel-card {
-    background: rgba(255, 255, 255, 0.96);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(250, 246, 235, 0.9));
+    border: 1px solid rgba(220, 176, 69, 0.5);
+    box-shadow:
+        0 14px 36px rgba(16, 28, 44, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.82);
 }
 
 .mode-item {
     padding: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
-    border: 1px solid rgba(16, 71, 112, 0.12);
+    border: 1px solid rgba(216, 168, 57, 0.45);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(249, 245, 234, 0.78));
 }
 
 .mode-item:hover {
-    border-color: rgba(15, 76, 129, 0.42);
-    transform: translateY(-2px);
+    border-color: rgba(190, 146, 44, 0.9);
+    box-shadow: 0 10px 22px rgba(20, 30, 44, 0.12);
+    transform: translateY(-2px) scale(1.01);
 }
 </style>

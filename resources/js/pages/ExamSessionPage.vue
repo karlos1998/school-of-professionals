@@ -243,14 +243,19 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
 <style scoped>
 .panel-card {
-    background: rgba(255, 255, 255, 0.96);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(250, 246, 235, 0.9));
+    border: 1px solid rgba(220, 176, 69, 0.5);
+    box-shadow:
+        0 14px 36px rgba(16, 28, 44, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.84);
 }
 
 .answer-item {
     padding: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
-    border: 1px solid rgba(16, 71, 112, 0.12);
+    border: 1px solid rgba(216, 168, 57, 0.38);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.94), rgba(249, 245, 235, 0.78));
 }
 
 .answer-item.success {
@@ -265,13 +270,13 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
 .question-shell {
     padding: 18px;
-    border: 1px solid rgba(15, 76, 129, 0.15);
+    border: 1px solid rgba(215, 168, 58, 0.42);
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 251, 255, 0.9));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(249, 245, 236, 0.86));
 }
 
 .summary-card {
-    border: 1px solid rgba(15, 76, 129, 0.14);
+    border: 1px solid rgba(214, 166, 56, 0.36);
 }
 
 @media (max-width: 700px) {

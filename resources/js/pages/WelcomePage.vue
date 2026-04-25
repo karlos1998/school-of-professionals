@@ -42,7 +42,11 @@ defineProps<Props>();
 
 <style scoped>
 .panel-card {
-    background: rgba(255, 255, 255, 0.94);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(250, 245, 233, 0.92));
+    border: 1px solid rgba(221, 176, 68, 0.5);
+    box-shadow:
+        0 16px 42px rgba(15, 28, 46, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8);
 }
 
 .welcome-row {
@@ -50,13 +54,15 @@ defineProps<Props>();
 }
 
 .authority-card {
-    border: 1px solid rgba(15, 76, 129, 0.2);
-    transition: all 0.2s ease;
+    border: 1px solid rgba(216, 168, 57, 0.45);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.96), rgba(251, 247, 236, 0.8));
+    transition: all 0.22s ease;
 }
 
 .authority-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(15, 76, 129, 0.45);
+    transform: translateY(-2px) scale(1.01);
+    border-color: rgba(186, 142, 41, 0.85);
+    box-shadow: 0 10px 24px rgba(22, 31, 45, 0.12);
 }
 
 @media (max-width: 700px) {
