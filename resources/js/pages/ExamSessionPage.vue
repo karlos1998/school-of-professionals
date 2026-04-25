@@ -4,12 +4,6 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import { useExamRunnerStore } from '@/stores/examRunnerStore';
 import type { ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
 
-interface ModeRoute {
-    value: ExamMode;
-    label: string;
-    url: string;
-}
-
 interface Props {
     authority: {
         name: string;
@@ -24,7 +18,8 @@ interface Props {
         slug: string;
     } | null;
     selectedMode: ExamMode;
-    modeRoutes: ModeRoute[];
+    selectedModeLabel: string;
+    modeSelectionUrl: string;
     backUrl: string;
     exam: ExamSessionPayload;
 }
@@ -117,29 +112,17 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                                 <span v-if="selectedClass">(Klasa {{ selectedClass.name }})</span>
                             </h1>
                         </div>
-                        <v-btn :href="backUrl" prepend-icon="mdi-arrow-left" variant="outlined">Lista testow</v-btn>
+                        <div class="d-flex ga-2 flex-wrap justify-end">
+                            <v-chip color="primary" variant="tonal">{{ selectedModeLabel }}</v-chip>
+                            <v-btn :href="modeSelectionUrl" prepend-icon="mdi-arrow-left" variant="outlined">Zmien tryb</v-btn>
+                        </div>
                     </v-card-title>
 
                     <v-card-text>
-                        <v-row class="mb-4">
-                            <v-col v-for="mode in modeRoutes" :key="mode.value" cols="12" md="6">
-                                <v-card
-                                    :class="['mode-item', { active: mode.value === selectedMode }]"
-                                    border
-                                    rounded="lg"
-                                    :href="mode.url"
-                                >
-                                    <div class="d-flex align-center justify-space-between ga-2">
-                                        <strong>{{ mode.label }}</strong>
-                                        <v-icon icon="mdi-chevron-right" />
-                                    </div>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-
                         <div class="d-flex flex-wrap ga-3 mb-6">
                             <v-chip color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
                             <v-chip color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
+                            <v-btn :href="backUrl" variant="text" prepend-icon="mdi-format-list-bulleted">Lista testow</v-btn>
                         </div>
 
                         <template v-if="isStudyMode">
@@ -255,17 +238,11 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
     background: rgba(255, 255, 255, 0.96);
 }
 
-.mode-item,
 .answer-item {
     padding: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
     border: 1px solid rgba(16, 71, 112, 0.12);
-}
-
-.mode-item.active {
-    border-color: #0f4c81;
-    box-shadow: 0 6px 16px rgba(15, 76, 129, 0.14);
 }
 
 .answer-item.success {
