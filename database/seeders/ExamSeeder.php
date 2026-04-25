@@ -17,35 +17,39 @@ class ExamSeeder extends Seeder
     {
         Exam::query()->delete();
 
-        $authorities = collect(['UDT', 'WIT'])
-            ->mapWithKeys(fn (string $name): array => [
-                $name => ExamAuthority::query()->updateOrCreate(
-                    ['slug' => Str::slug($name)],
-                    ['name' => $name],
-                ),
-            ]);
+        /** @var array<string, ExamAuthority> $authorities */
+        $authorities = [];
+        foreach (['UDT', 'WIT'] as $name) {
+            $authorities[$name] = ExamAuthority::query()->updateOrCreate(
+                ['slug' => Str::slug($name)],
+                ['name' => $name],
+            );
+        }
 
-        $categories = collect([
+        /** @var array<string, ExamCategory> $categories */
+        $categories = [];
+        foreach ([
             'Dzwigi budowlane',
             'Podesty ruchome',
             'Wozki jezdniowe',
             'Hakowy i sygnalista',
             'Maszyny drogowe',
             'Transport bliski',
-        ])->mapWithKeys(fn (string $name): array => [
-            $name => ExamCategory::query()->updateOrCreate(
+        ] as $name) {
+            $categories[$name] = ExamCategory::query()->updateOrCreate(
                 ['slug' => Str::slug($name)],
                 ['name' => $name],
-            ),
-        ]);
+            );
+        }
 
-        $classes = collect(['I', 'II', 'III'])
-            ->mapWithKeys(fn (string $name): array => [
-                $name => ExamClass::query()->updateOrCreate(
-                    ['slug' => Str::slug($name)],
-                    ['name' => $name],
-                ),
-            ]);
+        /** @var array<string, ExamClass> $classes */
+        $classes = [];
+        foreach (['I', 'II', 'III'] as $name) {
+            $classes[$name] = ExamClass::query()->updateOrCreate(
+                ['slug' => Str::slug($name)],
+                ['name' => $name],
+            );
+        }
 
         $examDefinitions = [
             // UDT: test z klasami I + II

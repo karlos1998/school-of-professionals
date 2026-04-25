@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 
 class EloquentExamRepository implements ExamRepositoryInterface
 {
+    /** @return Collection<int, ExamAuthority> */
     public function getExamAuthorities(): Collection
     {
         return ExamAuthority::query()
@@ -17,6 +18,7 @@ class EloquentExamRepository implements ExamRepositoryInterface
             ->get();
     }
 
+    /** @return Collection<int, Exam> */
     public function getExamsForAuthority(string $authoritySlug): Collection
     {
         return Exam::query()

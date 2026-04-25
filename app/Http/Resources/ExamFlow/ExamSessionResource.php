@@ -2,24 +2,48 @@
 
 namespace App\Http\Resources\ExamFlow;
 
+use App\Models\Exam;
+use UnexpectedValueException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Exam */
 class ExamSessionResource extends JsonResource
 {
+    /**
+     * @return array{
+     *     id: int,
+     *     authoritySlug: string,
+     *     testSlug: string,
+     *     name: string,
+     *     description: string|null,
+     *     class: array{name: string, slug: string}|null,
+     *     questions: list<array{
+     *         id: int,
+     *         position: int,
+     *         content: string,
+     *         explanation: string|null,
+     *         answers: list<array{id: int, content: string, isCorrect: bool}>
+     *     }>
+     * }
+     */
     public function toArray(Request $request): array
     {
+        if (!($this->resource instanceof Exam)) {
+            throw new UnexpectedValueException('ExamSessionResource expects Exam model.');
+        }
+
         return [
-            'id' => $this->id,
-            'authoritySlug' => $this->authority->slug,
-            'testSlug' => $this->category->slug,
-            'name' => $this->name,
-            'description' => $this->description,
-            'class' => $this->examClass ? [
-                'name' => $this->examClass->name,
-                'slug' => $this->examClass->slug,
+            'id' => $this->resource->id,
+            'authoritySlug' => $this->resource->authority->slug,
+            'testSlug' => $this->resource->category->slug,
+            'name' => $this->resource->name,
+            'description' => $this->resource->description,
+            'class' => $this->resource->examClass ? [
+                'name' => $this->resource->examClass->name,
+                'slug' => $this->resource->examClass->slug,
             ] : null,
-            'questions' => ExamQuestionResource::collection($this->questions)->resolve(),
+            'questions' => array_values(ExamQuestionResource::collection($this->resource->questions)->resolve()),
         ];
     }
 }
