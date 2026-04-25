@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,16 +15,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $explanation
  * @property-read Exam $exam
  */
+#[Fillable([
+    'exam_id',
+    'position',
+    'content',
+    'explanation',
+])]
 class Question extends Model
 {
-    /** @var list<string> */
-    protected $fillable = [
-        'exam_id',
-        'position',
-        'content',
-        'explanation',
-    ];
-
     /** @return BelongsTo<Exam, $this> */
     public function exam(): BelongsTo
     {

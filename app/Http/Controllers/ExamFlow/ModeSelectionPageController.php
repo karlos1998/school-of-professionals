@@ -5,8 +5,8 @@ namespace App\Http\Controllers\ExamFlow;
 use App\Domain\Exams\Exceptions\ExamFlowException;
 use App\Http\Controllers\Controller;
 use App\Services\Exams\ExamFlowService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

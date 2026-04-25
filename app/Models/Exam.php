@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,18 +20,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read ExamCategory $category
  * @property-read ExamClass|null $examClass
  */
+#[Fillable([
+    'exam_authority_id',
+    'exam_category_id',
+    'exam_class_id',
+    'name',
+    'slug',
+    'description',
+])]
 class Exam extends Model
 {
-    /** @var list<string> */
-    protected $fillable = [
-        'exam_authority_id',
-        'exam_category_id',
-        'exam_class_id',
-        'name',
-        'slug',
-        'description',
-    ];
-
     /** @return BelongsTo<ExamAuthority, $this> */
     public function authority(): BelongsTo
     {

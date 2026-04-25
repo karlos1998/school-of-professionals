@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Repositories\Contracts\ExamRepositoryInterface;
 use App\Repositories\Eloquent\EloquentExamRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,6 +16,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        Model::shouldBeStrict(! $this->app->isProduction());
     }
 }

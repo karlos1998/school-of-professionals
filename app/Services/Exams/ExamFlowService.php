@@ -215,7 +215,7 @@ class ExamFlowService
         $selectedMode = $this->resolveMode($modeSlug);
         $fullExam = $this->examRepository->getExamWithQuestionsById($variant['exam']->id);
 
-        if (!$fullExam instanceof Exam) {
+        if (! $fullExam instanceof Exam) {
             throw new ExamFlowException('Exam session data not found.');
         }
 
@@ -264,13 +264,13 @@ class ExamFlowService
         if ($classSlug !== null) {
             $exam = $items->first(static fn (Exam $item): bool => $item->examClass?->slug === $classSlug);
 
-            if (!$exam instanceof Exam) {
+            if (! $exam instanceof Exam) {
                 throw new ExamFlowException('Requested class variant not found.');
             }
         } else {
             $exam = $items->first(static fn (Exam $item): bool => $item->examClass === null);
 
-            if (!$exam instanceof Exam) {
+            if (! $exam instanceof Exam) {
                 $hasClasses = $items->contains(static fn (Exam $item): bool => $item->examClass !== null);
 
                 if ($hasClasses) {
@@ -302,7 +302,7 @@ class ExamFlowService
     {
         $authority = $this->examRepository->getExamAuthorities()->firstWhere('slug', $authoritySlug);
 
-        if (!$authority instanceof ExamAuthority) {
+        if (! $authority instanceof ExamAuthority) {
             throw new ExamFlowException('Authority not found.');
         }
 

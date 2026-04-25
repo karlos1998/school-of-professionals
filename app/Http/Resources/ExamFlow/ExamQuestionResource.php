@@ -3,9 +3,9 @@
 namespace App\Http\Resources\ExamFlow;
 
 use App\Models\Question;
-use UnexpectedValueException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use UnexpectedValueException;
 
 /** @mixin Question */
 class ExamQuestionResource extends JsonResource
@@ -21,7 +21,7 @@ class ExamQuestionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if (!($this->resource instanceof Question)) {
+        if (! ($this->resource instanceof Question)) {
             throw new UnexpectedValueException('ExamQuestionResource expects Question model.');
         }
 

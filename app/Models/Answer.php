@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,15 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_correct
  * @property-read Question $question
  */
+#[Fillable([
+    'question_id',
+    'content',
+    'is_correct',
+])]
 class Answer extends Model
 {
-    /** @var list<string> */
-    protected $fillable = [
-        'question_id',
-        'content',
-        'is_correct',
-    ];
-
     /** @return array<string, string> */
     protected function casts(): array
     {
