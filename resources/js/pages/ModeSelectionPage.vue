@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import type { ExamMode } from '@/types/exam-flow';
 
@@ -25,7 +26,15 @@ interface Props {
     modeRoutes: ModeRoute[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const learningModes = computed<ModeRoute[]>(() => {
+    return props.modeRoutes.filter((mode) => ['sequential', 'random', 'study'].includes(mode.value));
+});
+
+const examModes = computed<ModeRoute[]>(() => {
+    return props.modeRoutes.filter((mode) => mode.value === 'exam');
+});
 </script>
 
 <template>
@@ -45,16 +54,43 @@ defineProps<Props>();
                     </v-card-title>
 
                     <v-card-text>
-                        <v-row>
-                            <v-col v-for="mode in modeRoutes" :key="mode.value" cols="12" sm="6">
-                                <v-card class="mode-item h-100" border rounded="lg" :href="mode.url">
-                                    <div class="d-flex align-center justify-space-between ga-2">
-                                        <strong>{{ mode.label }}</strong>
-                                        <v-icon icon="mdi-chevron-right" />
-                                    </div>
-                                </v-card>
-                            </v-col>
-                        </v-row>
+                        <v-card class="mode-section mb-5" variant="outlined" rounded="lg">
+                            <v-card-title class="section-title">
+                                <v-icon icon="mdi-school-outline" class="mr-2" />
+                                Nauka
+                            </v-card-title>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col v-for="mode in learningModes" :key="mode.value" cols="12" sm="6">
+                                        <v-card class="mode-item h-100" border rounded="lg" :href="mode.url">
+                                            <div class="d-flex align-center justify-space-between ga-2">
+                                                <strong>{{ mode.label }}</strong>
+                                                <v-icon icon="mdi-chevron-right" />
+                                            </div>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
+
+                        <v-card class="mode-section mode-section--exam" variant="outlined" rounded="lg">
+                            <v-card-title class="section-title">
+                                <v-icon icon="mdi-clipboard-check-outline" class="mr-2" />
+                                Egzamin
+                            </v-card-title>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col v-for="mode in examModes" :key="mode.value" cols="12" sm="6">
+                                        <v-card class="mode-item mode-item--exam h-100" border rounded="lg" :href="mode.url">
+                                            <div class="d-flex align-center justify-space-between ga-2">
+                                                <strong>{{ mode.label }}</strong>
+                                                <v-icon icon="mdi-chevron-right" />
+                                            </div>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -83,5 +119,26 @@ defineProps<Props>();
     border-color: rgba(190, 146, 44, 0.9);
     box-shadow: 0 10px 22px rgba(20, 30, 44, 0.12);
     transform: translateY(-2px) scale(1.01);
+}
+
+.mode-section {
+    border: 1px solid rgba(216, 168, 57, 0.38);
+    background: linear-gradient(155deg, rgba(255, 255, 255, 0.88), rgba(251, 248, 238, 0.74));
+}
+
+.mode-section--exam {
+    border-color: rgba(26, 56, 88, 0.32);
+    background: linear-gradient(155deg, rgba(241, 247, 255, 0.88), rgba(232, 241, 251, 0.72));
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #203d60;
+}
+
+.mode-item--exam {
+    border-color: rgba(54, 99, 146, 0.45);
+    background: linear-gradient(150deg, rgba(250, 254, 255, 0.95), rgba(230, 240, 251, 0.82));
 }
 </style>

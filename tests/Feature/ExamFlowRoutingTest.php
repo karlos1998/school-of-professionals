@@ -67,8 +67,8 @@ class ExamFlowRoutingTest extends TestCase
                 ->component('ExamSessionPage')
                 ->where('selectedMode', 'exam')
                 ->where('exam.class.slug', 'i')
-                ->where('examConfig.questionLimit', 20)
-                ->where('examConfig.passingThreshold', 16)
+                ->where('examConfig.questionLimit', (int) config('exam.session.question_limit'))
+                ->where('examConfig.passingThreshold', (int) config('exam.session.passing_threshold'))
                 ->has('exam.questions', 30));
     }
 

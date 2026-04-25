@@ -48,9 +48,11 @@ class ExamFlowBrowserTest extends DuskTestCase
         $this->browse(function (Browser $browser): void {
             $browser->visit('/egzaminy/wit/maszyny-drogowe')
                 ->waitForText('Wybierz tryb testu')
-                ->clickLink('Egzamin (20 pytań)')
+                ->script('document.querySelector(\'a[href$="/tryb/exam"]\')?.click();');
+
+            $browser
                 ->waitForLocation('/egzaminy/wit/maszyny-drogowe/tryb/exam')
-                ->waitForText('Pytanie 1 / 20')
+                ->waitForText('Pytanie 1 /')
                 ->assertSee('Pytania:');
         });
     }

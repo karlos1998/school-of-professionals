@@ -12,8 +12,8 @@ enum ExamMode: string
     public function label(): string
     {
         return match ($this) {
-            self::Sequential => 'Po kolei + feedback',
-            self::Random => 'Losowo + feedback',
+            self::Sequential => 'Po kolei',
+            self::Random => 'Losowo',
             self::Study => 'Tryb nauki',
             self::Exam => 'Egzamin',
         };
