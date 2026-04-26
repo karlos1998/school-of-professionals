@@ -301,6 +301,7 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
 .answer-item {
     padding: 14px;
+    margin-bottom: 10px;
     transition: all 0.2s ease;
     cursor: pointer;
     border: 1px solid rgba(216, 168, 57, 0.38);
