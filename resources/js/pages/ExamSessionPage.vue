@@ -129,7 +129,7 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                     <v-card-text>
                         <div class="d-flex flex-wrap ga-3 mb-6">
                             <v-chip color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
-                            <v-chip color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
+                            <v-chip v-if="!isStudyMode" color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
                             <v-btn color="warning" variant="tonal" prepend-icon="mdi-refresh" @click="restartSession">
                                 Zacznij od poczatku
                             </v-btn>
