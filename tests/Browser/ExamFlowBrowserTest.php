@@ -56,4 +56,22 @@ class ExamFlowBrowserTest extends DuskTestCase
                 ->assertSee('Pytania:');
         });
     }
+
+    public function test_user_can_expand_all_questions_in_study_mode(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $browser->visit('/egzaminy/udt/dzwigi-budowlane/i')
+                ->waitForText('Wybierz tryb testu')
+                ->script('document.querySelector(\'a[href$="/tryb/study"]\')?.click();');
+
+            $browser
+                ->waitForLocation('/egzaminy/udt/dzwigi-budowlane/i/tryb/study')
+                ->waitForText('Lista pytan')
+                ->assertSee('Rozwin wszystko')
+                ->assertDontSee('(Dzwigi budowlane) Pytanie 1. Jak postapic w obszarze: BHP i przygotowanie stanowiska?')
+                ->click('[data-testid="study-toggle-all"]')
+                ->waitForText('(Dzwigi budowlane) Pytanie 1. Jak postapic w obszarze: BHP i przygotowanie stanowiska?')
+                ->assertSee('Zwin wszystko');
+        });
+    }
 }

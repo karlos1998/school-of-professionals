@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useExamRunnerStore } from '@/stores/examRunnerStore';
 import type { ExamConfig, ExamMode, ExamQuestion, ExamSessionPayload } from '@/types/exam-flow';
@@ -48,6 +48,17 @@ const shouldShowExamSummary = computed(() => isExamMode.value && store.isSession
 const incorrectAnswersCount = computed(() => Math.max(store.totalQuestions - store.correctAnswersCount, 0));
 const isExamPassed = computed(() => store.correctAnswersCount >= props.examConfig.passingThreshold);
 const canGoNext = computed(() => store.canGoToNextQuestion());
+const expandedStudyQuestions = ref<number[]>([]);
+
+const allStudyQuestionIds = computed(() => store.orderedQuestions.map((question) => question.id));
+
+const areAllStudyQuestionsExpanded = computed({
+    get: (): boolean => allStudyQuestionIds.value.length > 0
+        && expandedStudyQuestions.value.length === allStudyQuestionIds.value.length,
+    set: (shouldExpandAll: boolean): void => {
+        expandedStudyQuestions.value = shouldExpandAll ? [...allStudyQuestionIds.value] : [];
+    },
+});
 
 const chooseAnswer = (question: ExamQuestion, answerId: number | null): void => {
     if (answerId === null) {
@@ -137,11 +148,39 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                         </div>
 
                         <template v-if="isStudyMode">
-                            <v-expansion-panels variant="accordion">
-                                <v-expansion-panel v-for="question in store.orderedQuestions" :key="question.id" elevation="0">
+                            <div class="study-tools mb-4">
+                                <div>
+                                    <p class="text-subtitle-2 font-weight-bold mb-1">Lista pytan</p>
+                                    <p class="text-body-2 text-medium-emphasis mb-0">Jednym ruchem rozwiniesz lub zwiniesz wszystkie odpowiedzi.</p>
+                                </div>
+
+                                <v-switch
+                                    v-model="areAllStudyQuestionsExpanded"
+                                    color="primary"
+                                    inset
+                                    hide-details
+                                    data-testid="study-toggle-all"
+                                >
+                                    <template #label>
+                                        <span class="font-weight-medium">
+                                            {{ areAllStudyQuestionsExpanded ? 'Zwin wszystko' : 'Rozwin wszystko' }}
+                                        </span>
+                                    </template>
+                                </v-switch>
+                            </div>
+
+                            <v-expansion-panels v-model="expandedStudyQuestions" variant="accordion" multiple>
+                                <v-expansion-panel
+                                    v-for="question in store.orderedQuestions"
+                                    :key="question.id"
+                                    :value="question.id"
+                                    elevation="0"
+                                >
                                     <v-expansion-panel-title>Pytanie {{ question.position }}</v-expansion-panel-title>
                                     <v-expansion-panel-text>
-                                        <p class="font-weight-medium mb-4">{{ question.content }}</p>
+                                        <p :data-testid="`study-question-content-${question.position}`" class="font-weight-medium mb-4">
+                                            {{ question.content }}
+                                        </p>
                                         <v-list density="compact">
                                             <v-list-item v-for="answer in question.answers" :key="answer.id" :base-color="answerColor(question, answer.id)">
                                                 <template #prepend>
@@ -289,7 +328,23 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
     border: 1px solid rgba(214, 166, 56, 0.36);
 }
 
+.study-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    border: 1px solid rgba(215, 168, 58, 0.34);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 245, 236, 0.82));
+}
+
 @media (max-width: 700px) {
+    .study-tools {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
     .nav-actions :deep(.v-btn) {
         flex: 1 1 100%;
     }
