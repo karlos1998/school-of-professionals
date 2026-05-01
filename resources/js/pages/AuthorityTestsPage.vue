@@ -35,7 +35,7 @@ const selectedTestName = ref('');
 const classOptions = ref<TestClass[]>([]);
 
 const openTest = (test: TestItem): void => {
-    if (props.authority.slug === 'udt' && test.hasClassSelection) {
+    if (test.hasClassSelection) {
         selectedTestName.value = test.name;
         classOptions.value = test.classes;
         classDialog.value = true;
