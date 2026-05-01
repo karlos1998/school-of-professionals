@@ -181,6 +181,12 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                                         <p :data-testid="`study-question-content-${question.position}`" class="font-weight-medium mb-4">
                                             {{ question.content }}
                                         </p>
+                                        <v-img
+                                            v-if="question.imageUrl"
+                                            :src="question.imageUrl"
+                                            max-width="420"
+                                            class="mb-4 rounded-lg border"
+                                        />
                                         <v-list density="compact">
                                             <v-list-item v-for="answer in question.answers" :key="answer.id" :base-color="answerColor(question, answer.id)">
                                                 <template #prepend>
@@ -221,6 +227,12 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                                 </v-card-title>
                                 <v-card-text>
                                     <p class="font-weight-medium mb-3">{{ question.content }}</p>
+                                    <v-img
+                                        v-if="question.imageUrl"
+                                        :src="question.imageUrl"
+                                        max-width="420"
+                                        class="mb-4 rounded-lg border"
+                                    />
 
                                     <v-list density="compact" class="bg-transparent">
                                         <v-list-item
@@ -252,6 +264,12 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
                                 <v-progress-linear :model-value="(store.answeredCount / store.totalQuestions) * 100" color="primary" height="10" rounded class="mb-5" />
                                 <p class="text-h6 mb-5">{{ store.currentQuestion.content }}</p>
+                                <v-img
+                                    v-if="store.currentQuestion.imageUrl"
+                                    :src="store.currentQuestion.imageUrl"
+                                    max-width="420"
+                                    class="mb-5 rounded-lg border"
+                                />
 
                                 <v-radio-group :model-value="store.selectedAnswerId(store.currentQuestion.id)" @update:model-value="(value) => chooseAnswer(store.currentQuestion!, value)">
                                     <v-sheet

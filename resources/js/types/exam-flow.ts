@@ -10,6 +10,7 @@ export interface ExamQuestion {
     id: number;
     position: number;
     content: string;
+    imageUrl: string | null;
     explanation: string | null;
     answers: ExamAnswer[];
 }

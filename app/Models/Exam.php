@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $exam_authority_id
  * @property int $exam_category_id
  * @property int|null $exam_class_id
+ * @property string|null $source
+ * @property string|null $source_slug
  * @property string $name
  * @property string $slug
  * @property string|null $description
@@ -24,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'exam_authority_id',
     'exam_category_id',
     'exam_class_id',
+    'source',
+    'source_slug',
     'name',
     'slug',
     'description',

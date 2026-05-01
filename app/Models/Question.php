@@ -11,14 +11,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $exam_id
  * @property int $position
+ * @property string|null $source_question_key
  * @property string $content
+ * @property string|null $image_path
  * @property string|null $explanation
  * @property-read Exam $exam
  */
 #[Fillable([
     'exam_id',
     'position',
+    'source_question_key',
     'content',
+    'image_path',
     'explanation',
 ])]
 class Question extends Model
