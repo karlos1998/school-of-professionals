@@ -53,6 +53,10 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'admin_login' => env('ADMIN_LOGIN'),
+    'admin_password' => env('ADMIN_PASSWORD'),
+    'super_admin_login' => env('SUPER_ADMIN_LOGIN'),
+    'super_admin_password' => env('SUPER_ADMIN_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
