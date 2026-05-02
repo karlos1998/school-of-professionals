@@ -2,7 +2,7 @@ import { router, useForm } from '@inertiajs/vue3';
 
 export const adminQuestionsService = {
     backToTests(): void {
-        router.visit('/admin-panel');
+        router.visit('/admin-panel/tests');
     },
     remove(examId: number, questionId: number): void {
         router.delete(`/admin-panel/tests/${examId}/questions/${questionId}`);

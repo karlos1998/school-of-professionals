@@ -31,6 +31,7 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
 <template>
     <MainLayout>
         <div class="d-flex justify-space-between mb-4">
+            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="$inertia.visit('/admin-panel')">Wróć do dashboardu</v-btn>
             <v-btn color="primary" @click="openCreate">Dodaj test</v-btn>
         </div>
         <v-data-table-server :items="props.exams.data" :headers="[

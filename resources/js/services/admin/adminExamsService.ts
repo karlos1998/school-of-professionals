@@ -8,7 +8,7 @@ export const adminExamsService = {
         router.delete(`/admin-panel/tests/${examId}`);
     },
     fetchPage(page: number, itemsPerPage: number): void {
-        router.get('/admin-panel', { page, per_page: itemsPerPage }, { preserveState: true, preserveScroll: true });
+        router.get('/admin-panel/tests', { page, per_page: itemsPerPage }, { preserveState: true, preserveScroll: true });
     },
     save(
         form: ReturnType<typeof useForm>,
