@@ -17,9 +17,10 @@ class AdminExamService
     ) {}
 
     /** @return array<string, mixed> */
-    public function indexPayload(int $perPage = 50): array
+    /** @param array{authority:string|null,search:string|null} $filters */
+    public function indexPayload(int $perPage = 50, array $filters = []): array
     {
-        $exams = $this->examRepository->paginate($perPage);
+        $exams = $this->examRepository->paginate($perPage, $filters);
         /** @var array<string, mixed> $examCollection */
         $examCollection = (new ExamCollection($exams))->response()->getData(true);
         $payload = PaginatedResourcePayloadDto::fromCollectionAndPaginator($examCollection, $exams);
@@ -29,6 +30,10 @@ class AdminExamService
             'authorities' => $this->lookupRepository->examAuthorities(),
             'categories' => $this->lookupRepository->examCategories(),
             'classes' => $this->lookupRepository->examClasses(),
+            'filters' => [
+                'authority' => $filters['authority'] ?? null,
+                'search' => $filters['search'] ?? null,
+            ],
         ];
     }
 

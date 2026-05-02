@@ -18,8 +18,12 @@ class AdminExamController extends Controller
     public function index(Request $request): Response
     {
         $perPage = $request->integer('per_page', 50);
+        $filters = [
+            'authority' => $request->string('authority')->toString() ?: null,
+            'search' => $request->string('search')->toString() ?: null,
+        ];
 
-        return Inertia::render('Admin/ExamsPage', $this->adminExamService->indexPayload($perPage));
+        return Inertia::render('Admin/ExamsPage', $this->adminExamService->indexPayload($perPage, $filters));
     }
 
     public function store(StoreExamRequest $request): RedirectResponse

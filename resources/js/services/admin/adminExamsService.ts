@@ -7,8 +7,19 @@ export const adminExamsService = {
     remove(examId: number): void {
         router.delete(`/admin-panel/tests/${examId}`);
     },
-    fetchPage(page: number, itemsPerPage: number): void {
-        router.get('/admin-panel/tests', { page, per_page: itemsPerPage }, { preserveState: true, preserveScroll: true });
+    fetchPage(page: number, itemsPerPage: number, filters?: { authority?: string | null; search?: string | null }): void {
+        router.get(
+            '/admin-panel/tests',
+            { page, per_page: itemsPerPage, authority: filters?.authority ?? null, search: filters?.search ?? null },
+            { preserveState: true, preserveScroll: true },
+        );
+    },
+    applyFilters(itemsPerPage: number, filters: { authority?: string | null; search?: string | null }): void {
+        router.get(
+            '/admin-panel/tests',
+            { page: 1, per_page: itemsPerPage, authority: filters.authority ?? null, search: filters.search ?? null },
+            { preserveState: true, preserveScroll: true },
+        );
     },
     save(
         form: ReturnType<typeof useForm>,

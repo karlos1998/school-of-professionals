@@ -7,7 +7,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface AdminExamRepositoryInterface
 {
-    public function paginate(int $perPage = 50): LengthAwarePaginator;
+    /** @param array{authority:string|null,search:string|null} $filters */
+    public function paginate(int $perPage = 50, array $filters = []): LengthAwarePaginator;
 
     public function findById(int $examId): ?Exam;
 

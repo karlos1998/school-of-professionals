@@ -5,8 +5,17 @@ import { adminExamsService } from '@/services/admin/adminExamsService';
 import type { ExamResource, OptionResource, PaginationResource } from '@/types/admin/resources';
 import { ref } from 'vue';
 
-const props = defineProps<{ exams: { data: ExamResource[]; pagination: PaginationResource }; authorities: OptionResource[]; categories: OptionResource[]; classes: OptionResource[] }>();
+const props = defineProps<{
+    exams: { data: ExamResource[]; pagination: PaginationResource };
+    authorities: OptionResource[];
+    categories: OptionResource[];
+    classes: OptionResource[];
+    filters: { authority: string | null; search: string | null };
+}>();
 const pagination = props.exams.pagination ?? { current_page: 1, last_page: 1, per_page: 50, total: 0 };
+const tableOptions = ref({ itemsPerPage: pagination.per_page });
+const filterAuthority = ref<string | null>(props.filters?.authority ?? null);
+const filterSearch = ref<string>(props.filters?.search ?? '');
 
 const modal = ref(false);
 const editId = ref<number | null>(null);
@@ -25,7 +34,18 @@ const openEdit = (exam: ExamResource): void => {
 const save = (): void => adminExamsService.save(form, editId.value, () => (modal.value = false));
 
 const handleTableOptions = (options: { page: number; itemsPerPage: number }): void => {
-    adminExamsService.fetchPage(options.page, options.itemsPerPage);
+    tableOptions.value.itemsPerPage = options.itemsPerPage;
+    adminExamsService.fetchPage(options.page, options.itemsPerPage, {
+        authority: filterAuthority.value,
+        search: filterSearch.value,
+    });
+};
+
+const applyFilters = (): void => {
+    adminExamsService.applyFilters(tableOptions.value.itemsPerPage, {
+        authority: filterAuthority.value,
+        search: filterSearch.value,
+    });
 };
 </script>
 <template>
@@ -33,6 +53,29 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
         <div class="d-flex justify-space-between mb-4">
             <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="$inertia.visit('/admin-panel')">Wróć do dashboardu</v-btn>
             <v-btn color="primary" @click="openCreate">Dodaj test</v-btn>
+        </div>
+        <div class="d-flex ga-3 align-end mb-4">
+            <v-select
+                v-model="filterAuthority"
+                :items="[
+                    { title: 'Wszystkie organy', value: null },
+                    { title: 'UDT', value: 'udt' },
+                    { title: 'WIT', value: 'wit' },
+                ]"
+                label="Organ"
+                item-title="title"
+                item-value="value"
+                clearable
+                style="max-width: 280px;"
+            />
+            <v-text-field
+                v-model="filterSearch"
+                label="Szukaj po nazwie testu"
+                clearable
+                style="max-width: 360px;"
+                @keyup.enter="applyFilters"
+            />
+            <v-btn color="primary" @click="applyFilters">Filtruj</v-btn>
         </div>
         <v-data-table-server :items="props.exams.data" :headers="[
             { title: 'Nazwa', key: 'name' },

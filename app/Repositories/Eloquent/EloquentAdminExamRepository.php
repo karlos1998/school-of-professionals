@@ -8,13 +8,26 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentAdminExamRepository extends BaseEloquentRepository implements AdminExamRepositoryInterface
 {
-    public function paginate(int $perPage = 50): LengthAwarePaginator
+    public function paginate(int $perPage = 50, array $filters = []): LengthAwarePaginator
     {
+        $authority = $filters['authority'] ?? null;
+        $search = $filters['search'] ?? null;
+
+        $query = Exam::query()
+            ->with(['authority', 'category', 'examClass'])
+            ->withCount('questions')
+            ->latest();
+
+        if (is_string($authority) && $authority !== '') {
+            $query->whereHas('authority', fn ($authorityQuery) => $authorityQuery->where('slug', $authority));
+        }
+
+        if (is_string($search) && $search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+
         return $this->paginateQuery(
-            Exam::query()
-                ->with(['authority', 'category', 'examClass'])
-                ->withCount('questions')
-                ->latest(),
+            $query,
             $perPage,
         );
     }
