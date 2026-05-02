@@ -23,12 +23,12 @@ Route::prefix('/admin-panel')->name('admin.')->group(function () {
         Route::post('/logout', [AdminSessionController::class, 'destroy'])->name('session.destroy');
         Route::get('/', [AdminExamController::class, 'index'])->name('dashboard');
         Route::post('/tests', [AdminExamController::class, 'store'])->name('tests.store');
-        Route::put('/tests/{exam}', [AdminExamController::class, 'update'])->name('tests.update');
-        Route::delete('/tests/{exam}', [AdminExamController::class, 'destroy'])->name('tests.destroy');
-        Route::get('/tests/{exam}/questions', [AdminQuestionController::class, 'index'])->name('tests.questions.index');
-        Route::post('/tests/{exam}/questions', [AdminQuestionController::class, 'store'])->name('tests.questions.store');
-        Route::put('/tests/{exam}/questions/{question}', [AdminQuestionController::class, 'update'])->name('tests.questions.update');
-        Route::delete('/tests/{exam}/questions/{question}', [AdminQuestionController::class, 'destroy'])->name('tests.questions.destroy');
+        Route::put('/tests/{examId}', [AdminExamController::class, 'update'])->name('tests.update');
+        Route::delete('/tests/{examId}', [AdminExamController::class, 'destroy'])->name('tests.destroy');
+        Route::get('/tests/{examId}/questions', [AdminQuestionController::class, 'index'])->name('tests.questions.index');
+        Route::post('/tests/{examId}/questions', [AdminQuestionController::class, 'store'])->name('tests.questions.store');
+        Route::put('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'update'])->name('tests.questions.update');
+        Route::delete('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'destroy'])->name('tests.questions.destroy');
     });
 });
 

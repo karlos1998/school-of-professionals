@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreQuestionRequest;
 use App\Http\Requests\Admin\UpdateQuestionRequest;
-use App\Http\Resources\Admin\QuestionResource;
-use App\Models\Exam;
-use App\Models\Question;
 use App\Services\Admin\AdminQuestionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,42 +15,30 @@ class AdminQuestionController extends Controller
 {
     public function __construct(public AdminQuestionService $adminQuestionService) {}
 
-    public function index(Request $request, Exam $exam): Response
+    public function index(Request $request, string $examId): Response
     {
         $perPage = $request->integer('per_page', 50);
-        $questions = $this->adminQuestionService->paginateForExam($exam, $perPage);
 
-        return Inertia::render('Admin/QuestionsPage', [
-            'exam' => ['id' => $exam->id, 'name' => $exam->name],
-            'questions' => QuestionResource::collection($questions),
-            'pagination' => [
-                'current_page' => $questions->currentPage(),
-                'last_page' => $questions->lastPage(),
-                'per_page' => $questions->perPage(),
-                'total' => $questions->total(),
-            ],
-        ]);
+        return Inertia::render('Admin/QuestionsPage', $this->adminQuestionService->indexPayload((int) $examId, $perPage));
     }
 
-    public function store(StoreQuestionRequest $request, Exam $exam): RedirectResponse
+    public function store(StoreQuestionRequest $request, string $examId): RedirectResponse
     {
-        $this->adminQuestionService->create($exam, $request->validated());
+        $this->adminQuestionService->create((int) $examId, $request->validated());
 
         return back()->with('success', 'Pytanie zostało dodane.');
     }
 
-    public function update(UpdateQuestionRequest $request, Exam $exam, Question $question): RedirectResponse
+    public function update(UpdateQuestionRequest $request, string $examId, string $questionId): RedirectResponse
     {
-        abort_unless($question->exam_id === $exam->id, 404);
-        $this->adminQuestionService->update($question, $request->validated());
+        $this->adminQuestionService->update((int) $examId, (int) $questionId, $request->validated());
 
         return back()->with('success', 'Pytanie zostało zaktualizowane.');
     }
 
-    public function destroy(Exam $exam, Question $question): RedirectResponse
+    public function destroy(string $examId, string $questionId): RedirectResponse
     {
-        abort_unless($question->exam_id === $exam->id, 404);
-        $this->adminQuestionService->delete($question);
+        $this->adminQuestionService->delete((int) $examId, (int) $questionId);
 
         return back()->with('success', 'Pytanie zostało usunięte.');
     }

@@ -1,26 +1,22 @@
 <script setup lang="ts">
 import MainLayout from '@/layouts/MainLayout.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
+import { adminQuestionsService } from '@/services/admin/adminQuestionsService';
+import type { AnswerResource, PaginationResource, QuestionResource } from '@/types/admin/resources';
 import { ref } from 'vue';
 
-type Answer = { content: string; is_correct: boolean };
-type Question = { id: number; position: number; content: string; explanation: string | null; answers: Answer[] };
-
-const props = defineProps<{ exam: { id: number; name: string }; questions: { data: Question[] }; pagination: { current_page: number; last_page: number; per_page: number; total: number } }>();
+const props = defineProps<{ exam: { id: number; name: string }; questions: { data: QuestionResource[]; pagination: PaginationResource } }>();
+const pagination = props.questions.pagination ?? { current_page: 1, last_page: 1, per_page: 50, total: 0 };
 
 const modal = ref(false);
 const editId = ref<number | null>(null);
-const form = useForm({ position: 1, content: '', explanation: '', answers: [{ content: '', is_correct: true }, { content: '', is_correct: false }] as Answer[] });
+const form = useForm({ position: 1, content: '', explanation: '', answers: [{ content: '', is_correct: true }, { content: '', is_correct: false }] as AnswerResource[] });
 
 const setCorrect = (idx: number): void => { form.answers = form.answers.map((a, i) => ({ ...a, is_correct: i === idx })); };
 const addAnswer = (): void => { form.answers.push({ content: '', is_correct: false }); };
-const save = (): void => {
-    const base = `/admin-panel/tests/${props.exam.id}/questions`;
-    if (editId.value) { form.put(`${base}/${editId.value}`, { onSuccess: () => (modal.value = false) }); return; }
-    form.post(base, { onSuccess: () => (modal.value = false) });
-};
+const save = (): void => adminQuestionsService.save(form, props.exam.id, editId.value, () => (modal.value = false));
 
-const openEdit = (question: Question): void => {
+const openEdit = (question: QuestionResource): void => {
     editId.value = question.id;
     form.position = question.position;
     form.content = question.content;
@@ -30,19 +26,20 @@ const openEdit = (question: Question): void => {
 };
 
 const handleTableOptions = (options: { page: number; itemsPerPage: number }): void => {
-    router.get(`/admin-panel/tests/${props.exam.id}/questions`, { page: options.page, per_page: options.itemsPerPage }, { preserveState: true, preserveScroll: true });
+    adminQuestionsService.fetchPage(props.exam.id, options.page, options.itemsPerPage);
 };
 </script>
 <template>
     <MainLayout>
-        <div class="d-flex justify-space-between mb-4">
+        <div class="d-flex justify-space-between align-center mb-4">
+            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="adminQuestionsService.backToTests">Wróć do testów</v-btn>
             <h2>{{ props.exam.name }}</h2>
             <v-btn color="primary" @click="modal = true">Dodaj pytanie</v-btn>
         </div>
-        <v-data-table-server :items="props.questions.data" :headers="[{ title: '#', key: 'position' }, { title: 'Pytanie', key: 'content' }, { title: 'Akcje', key: 'actions', sortable: false }]" :items-length="props.pagination.total" :page="props.pagination.current_page" :items-per-page="props.pagination.per_page" @update:options="handleTableOptions">
+        <v-data-table-server :items="props.questions.data" :headers="[{ title: '#', key: 'position' }, { title: 'Pytanie', key: 'content' }, { title: 'Akcje', key: 'actions', sortable: false }]" :items-length="pagination.total" :page="pagination.current_page" :items-per-page="pagination.per_page" @update:options="handleTableOptions">
             <template #item.actions="{ item }">
                 <v-btn size="small" variant="text" @click="openEdit(item)">Edytuj</v-btn>
-                <v-btn size="small" variant="text" color="error" @click="router.delete(`/admin-panel/tests/${props.exam.id}/questions/${item.id}`)">Usuń</v-btn>
+                <v-btn size="small" variant="text" color="error" @click="adminQuestionsService.remove(props.exam.id, item.id)">Usuń</v-btn>
             </template>
         </v-data-table-server>
 

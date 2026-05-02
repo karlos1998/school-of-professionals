@@ -2,69 +2,74 @@
 
 namespace App\Services\Admin;
 
-use App\Models\Answer;
-use App\Models\Exam;
-use App\Models\Question;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\DTOs\Admin\PaginatedResourcePayloadDto;
+use App\Http\Resources\Admin\QuestionCollection;
+use App\Repositories\Contracts\AdminExamRepositoryInterface;
+use App\Repositories\Contracts\AdminQuestionRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class AdminQuestionService
 {
-    public function paginateForExam(Exam $exam, int $perPage = 10): LengthAwarePaginator
+    public function __construct(
+        public AdminExamRepositoryInterface $examRepository,
+        public AdminQuestionRepositoryInterface $questionRepository,
+    ) {}
+
+    /** @return array<string, mixed> */
+    public function indexPayload(int $examId, int $perPage = 50): array
     {
-        return Question::query()
-            ->whereBelongsTo($exam)
-            ->with('answers')
-            ->orderBy('position')
-            ->paginate($perPage)
-            ->withQueryString();
+        $exam = $this->examRepository->findById($examId);
+        if ($exam === null) {
+            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+        }
+
+        $questions = $this->questionRepository->paginateForExam($examId, $perPage);
+        /** @var array<string, mixed> $questionCollection */
+        $questionCollection = (new QuestionCollection($questions))->response()->getData(true);
+        $payload = PaginatedResourcePayloadDto::fromCollectionAndPaginator($questionCollection, $questions);
+
+        return [
+            'exam' => ['id' => $exam->id, 'name' => $exam->name],
+            'questions' => $payload->toArray(),
+        ];
     }
 
     /** @param array<string, mixed> $data */
-    public function create(Exam $exam, array $data): void
+    public function create(int $examId, array $data): void
     {
+        $exam = $this->examRepository->findById($examId);
+        if ($exam === null) {
+            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+        }
+
         DB::transaction(function () use ($exam, $data): void {
-            $question = Question::query()->create([
-                'exam_id' => $exam->id,
-                'position' => $data['position'],
-                'content' => $data['content'],
-                'explanation' => $data['explanation'] ?? null,
-            ]);
-
-            foreach ($data['answers'] as $answer) {
-                Answer::query()->create([
-                    'question_id' => $question->id,
-                    'content' => $answer['content'],
-                    'is_correct' => (bool) $answer['is_correct'],
-                ]);
-            }
+            $question = $this->questionRepository->createForExam($exam->id, $data);
+            $this->questionRepository->replaceAnswers($question, $data['answers']);
         });
     }
 
     /** @param array<string, mixed> $data */
-    public function update(Question $question, array $data): void
+    public function update(int $examId, int $questionId, array $data): void
     {
+        $question = $this->questionRepository->findById($questionId);
+        if ($question === null || $question->exam_id !== $examId) {
+            throw (new ModelNotFoundException())->setModel('question', [$questionId]);
+        }
+
         DB::transaction(function () use ($question, $data): void {
-            $question->update([
-                'position' => $data['position'],
-                'content' => $data['content'],
-                'explanation' => $data['explanation'] ?? null,
-            ]);
-
-            $question->answers()->delete();
-
-            foreach ($data['answers'] as $answer) {
-                Answer::query()->create([
-                    'question_id' => $question->id,
-                    'content' => $answer['content'],
-                    'is_correct' => (bool) $answer['is_correct'],
-                ]);
-            }
+            $this->questionRepository->update($question, $data);
+            $this->questionRepository->replaceAnswers($question, $data['answers']);
         });
     }
 
-    public function delete(Question $question): void
+    public function delete(int $examId, int $questionId): void
     {
-        $question->delete();
+        $question = $this->questionRepository->findById($questionId);
+        if ($question === null || $question->exam_id !== $examId) {
+            throw (new ModelNotFoundException())->setModel('question', [$questionId]);
+        }
+
+        $this->questionRepository->delete($question);
     }
 }
