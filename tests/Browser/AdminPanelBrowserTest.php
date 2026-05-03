@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\User;
 use Database\Seeders\ExamSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Dusk\Browser;
@@ -20,13 +21,11 @@ class AdminPanelBrowserTest extends DuskTestCase
 
     public function test_admin_can_log_in_open_tests_and_classes_modules(): void
     {
-        $this->browse(function (Browser $browser): void {
-            $browser->visit('/admin-panel/login')
-                ->waitForText('Logowanie do panelu admina')
-                ->type('input[type="email"]', 'admin@example.com')
-                ->type('input[type="password"]', 'asdasdasd')
-                ->click('button[type="submit"]')
-                ->waitForLocation('/admin-panel')
+        $admin = User::query()->where('email', 'admin@example.com')->firstOrFail();
+
+        $this->browse(function (Browser $browser) use ($admin): void {
+            $browser->loginAs($admin)
+                ->visit('/admin-panel')
                 ->assertPathIs('/admin-panel')
                 ->assertSee('Testy')
                 ->assertSee('Klasy')

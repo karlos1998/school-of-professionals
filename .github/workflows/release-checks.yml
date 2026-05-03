@@ -85,6 +85,7 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --force
+          php artisan admin:sync
           npm run build
 
       - name: Run frontend typecheck
