@@ -39,7 +39,7 @@ const classOptions = ref<TestClass[]>([]);
 const openTest = (test: TestItem): void => {
     examRunnerStore.rememberRecentTestRoute(`${props.authority.name} - ${test.name}`, test.url);
 
-    if (props.authority.slug === 'udt' && test.hasClassSelection) {
+    if (test.hasClassSelection) {
         selectedTestName.value = test.name;
         classOptions.value = test.classes;
         classDialog.value = true;

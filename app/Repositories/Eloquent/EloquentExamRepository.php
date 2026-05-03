@@ -49,7 +49,7 @@ class EloquentExamRepository implements ExamRepositoryInterface
                 'category:id,name,slug',
                 'examClass:id,name,slug',
                 'questions' => fn ($query) => $query
-                    ->select(['id', 'exam_id', 'position', 'content', 'explanation'])
+                    ->select(['id', 'exam_id', 'position', 'content', 'image_path', 'explanation'])
                     ->orderBy('position')
                     ->with([
                         'answers' => fn ($answerQuery) => $answerQuery

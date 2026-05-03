@@ -22,6 +22,7 @@ class ExamSessionResource extends JsonResource
      *         id: int,
      *         position: int,
      *         content: string,
+     *         imageUrl: string|null,
      *         explanation: string|null,
      *         answers: list<array{id: int, content: string, isCorrect: bool}>
      *     }>
