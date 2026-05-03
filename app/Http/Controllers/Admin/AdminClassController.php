@@ -24,14 +24,18 @@ class AdminClassController extends Controller
 
     public function store(StoreClassRequest $request): RedirectResponse
     {
-        $this->adminClassService->create($request->validated());
+        /** @var array{name:string} $data */
+        $data = $request->validated();
+        $this->adminClassService->create($data);
 
         return back()->with('success', 'Klasa została dodana.');
     }
 
     public function update(UpdateClassRequest $request, string $classId): RedirectResponse
     {
-        $this->adminClassService->update((int) $classId, $request->validated());
+        /** @var array{name:string} $data */
+        $data = $request->validated();
+        $this->adminClassService->update((int) $classId, $data);
 
         return back()->with('success', 'Klasa została zaktualizowana.');
     }

@@ -15,7 +15,8 @@ readonly class PaginatedResourcePayloadDto
     ) {}
 
     /**
-     * @param  array<string, mixed>  $resourceCollectionData
+     * @param array{data?:list<array<string,mixed>>} $resourceCollectionData
+     * @param LengthAwarePaginator<int, mixed> $paginator
      */
     public static function fromCollectionAndPaginator(array $resourceCollectionData, LengthAwarePaginator $paginator): self
     {

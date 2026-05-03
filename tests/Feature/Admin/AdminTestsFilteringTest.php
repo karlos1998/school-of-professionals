@@ -4,6 +4,7 @@ use App\Models\Exam;
 use App\Models\ExamAuthority;
 use App\Models\ExamCategory;
 use App\Models\User;
+use function Pest\Laravel\actingAs;
 
 it('filters tests by authority slug and search phrase', function (): void {
     config()->set('app.admin_login', 'admin@example.com');
@@ -33,7 +34,7 @@ it('filters tests by authority slug and search phrase', function (): void {
         'description' => null,
     ]);
 
-    $this->actingAs($admin)
+    actingAs($admin)
         ->get('/admin-panel/tests?authority=udt&search=wozki')
         ->assertOk()
         ->assertInertia(fn ($page) => $page

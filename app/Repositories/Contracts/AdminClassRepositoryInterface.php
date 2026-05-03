@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface AdminClassRepositoryInterface
 {
+    /** @return LengthAwarePaginator<int, ExamClass> */
     public function paginate(int $perPage = 50): LengthAwarePaginator;
 
     public function findById(int $classId): ?ExamClass;

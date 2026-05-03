@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\DTOs\Admin\PaginatedResourcePayloadDto;
 use App\Http\Resources\Admin\ExamCollection;
+use App\Models\Exam;
 use App\Repositories\Contracts\AdminLookupRepositoryInterface;
 use App\Repositories\Contracts\AdminExamRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,9 +17,20 @@ class AdminExamService
         public AdminLookupRepositoryInterface $lookupRepository,
     ) {}
 
-    /** @return array<string, mixed> */
-    /** @param array{authority:string|null,search:string|null} $filters */
-    public function indexPayload(int $perPage = 50, array $filters = []): array
+    /**
+     * @param array{authority:string|null,search:string|null} $filters
+     * @return array{
+     *   exams: array{
+     *     data:list<array<string,mixed>>,
+     *     pagination:array{current_page:int,last_page:int,per_page:int,total:int}
+     *   },
+     *   authorities:\Illuminate\Support\Collection<int, array{id:int,name:string}>,
+     *   categories:\Illuminate\Support\Collection<int, array{id:int,name:string}>,
+     *   classes:\Illuminate\Support\Collection<int, array{id:int,name:string}>,
+     *   filters:array{authority:string|null,search:string|null}
+     * }
+     */
+    public function indexPayload(int $perPage = 50, array $filters = ['authority' => null, 'search' => null]): array
     {
         $exams = $this->examRepository->paginate($perPage, $filters);
         /** @var array<string, mixed> $examCollection */
@@ -50,7 +62,7 @@ class AdminExamService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+            throw new ModelNotFoundException()->setModel(Exam::class, [$examId]);
         }
 
         $this->examRepository->update($exam, $data);
@@ -60,7 +72,7 @@ class AdminExamService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+            throw new ModelNotFoundException()->setModel(Exam::class, [$examId]);
         }
 
         $this->examRepository->delete($exam);

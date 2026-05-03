@@ -9,10 +9,11 @@ class ExamClassCollection extends ResourceCollection
 {
     public $collects = ExamClassResource::class;
 
+    /** @return array{data: array<int, array<string, mixed>>} */
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
+            'data' => $this->collection?->values()->all() ?? [],
         ];
     }
 }

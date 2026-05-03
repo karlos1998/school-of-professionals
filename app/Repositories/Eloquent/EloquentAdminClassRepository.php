@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentAdminClassRepository extends BaseEloquentRepository implements AdminClassRepositoryInterface
 {
+    /** @return LengthAwarePaginator<int, ExamClass> */
     public function paginate(int $perPage = 50): LengthAwarePaginator
     {
         return $this->paginateQuery(

@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\DTOs\Admin\PaginatedResourcePayloadDto;
 use App\Http\Resources\Admin\ExamClassCollection;
+use App\Models\ExamClass;
 use App\Repositories\Contracts\AdminClassRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
@@ -39,7 +40,7 @@ class AdminClassService
     {
         $examClass = $this->classRepository->findById($classId);
         if ($examClass === null) {
-            throw (new ModelNotFoundException())->setModel('exam_class', [$classId]);
+            throw (new ModelNotFoundException())->setModel(ExamClass::class, [$classId]);
         }
 
         $this->classRepository->update($examClass, [
@@ -52,7 +53,7 @@ class AdminClassService
     {
         $examClass = $this->classRepository->findById($classId);
         if ($examClass === null) {
-            throw (new ModelNotFoundException())->setModel('exam_class', [$classId]);
+            throw (new ModelNotFoundException())->setModel(ExamClass::class, [$classId]);
         }
 
         $this->classRepository->delete($examClass);

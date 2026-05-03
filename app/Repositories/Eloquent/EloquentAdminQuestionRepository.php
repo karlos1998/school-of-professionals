@@ -9,6 +9,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentAdminQuestionRepository extends BaseEloquentRepository implements AdminQuestionRepositoryInterface
 {
+    /** @return LengthAwarePaginator<int, Question> */
     public function paginateForExam(int $examId, int $perPage = 50): LengthAwarePaginator
     {
         return $this->paginateQuery(
@@ -46,6 +47,7 @@ class EloquentAdminQuestionRepository extends BaseEloquentRepository implements 
         return $question->refresh();
     }
 
+    /** @param list<array{content:string,is_correct:bool}> $answers */
     public function replaceAnswers(Question $question, array $answers): void
     {
         $question->answers()->delete();

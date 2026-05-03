@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,17 +15,20 @@ class ExamResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var Exam $exam */
+        $exam = $this->resource;
+
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'exam_authority_id' => $this->exam_authority_id,
-            'exam_category_id' => $this->exam_category_id,
-            'exam_class_id' => $this->exam_class_id,
-            'authority' => $this->authority?->name,
-            'category' => $this->category?->name,
-            'exam_class' => $this->examClass?->name,
-            'questions_count' => $this->questions_count ?? 0,
+            'id' => $exam->id,
+            'name' => $exam->name,
+            'description' => $exam->description,
+            'exam_authority_id' => $exam->exam_authority_id,
+            'exam_category_id' => $exam->exam_category_id,
+            'exam_class_id' => $exam->exam_class_id,
+            'authority' => $exam->authority->name,
+            'category' => $exam->category->name,
+            'exam_class' => $exam->examClass?->name,
+            'questions_count' => (int) ($exam->questions_count ?? 0),
         ];
     }
 }

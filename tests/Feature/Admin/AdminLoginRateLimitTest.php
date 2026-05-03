@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use function Pest\Laravel\post;
 
 it('returns rate limit message after too many failed admin login attempts', function (): void {
     config()->set('app.admin_login', 'admin@example.com');
@@ -11,13 +12,13 @@ it('returns rate limit message after too many failed admin login attempts', func
     User::factory()->create(['email' => 'admin@example.com']);
 
     for ($attempt = 0; $attempt < 5; $attempt++) {
-        $this->post('/admin-panel/login', [
+        post('/admin-panel/login', [
             'email' => 'admin@example.com',
             'password' => 'wrong-password',
         ])->assertSessionHasErrors(['email']);
     }
 
-    $response = $this->post('/admin-panel/login', [
+    $response = post('/admin-panel/login', [
         'email' => 'admin@example.com',
         'password' => 'wrong-password',
     ]);

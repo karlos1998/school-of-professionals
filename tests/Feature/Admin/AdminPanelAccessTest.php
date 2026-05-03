@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\User;
+use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 
 it('redirects guest to admin login', function (): void {
-    $this->get('/admin-panel')->assertRedirect('/login');
+    get('/admin-panel')->assertRedirect('/login');
 });
 
 it('allows admin login with env credentials', function (): void {
@@ -12,10 +14,10 @@ it('allows admin login with env credentials', function (): void {
 
     $user = User::factory()->create(['email' => 'admin@example.com']);
 
-    $this->post('/admin-panel/login', [
+    post('/admin-panel/login', [
         'email' => 'admin@example.com',
         'password' => 'asdasdasd',
     ])->assertRedirect('/admin-panel');
 
-    $this->assertAuthenticatedAs($user);
+    expect(auth()->id())->toBe($user->id);
 });

@@ -8,7 +8,11 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentAdminExamRepository extends BaseEloquentRepository implements AdminExamRepositoryInterface
 {
-    public function paginate(int $perPage = 50, array $filters = []): LengthAwarePaginator
+    /**
+     * @param array{authority:string|null,search:string|null} $filters
+     * @return LengthAwarePaginator<int, Exam>
+     */
+    public function paginate(int $perPage = 50, array $filters = ['authority' => null, 'search' => null]): LengthAwarePaginator
     {
         $authority = $filters['authority'] ?? null;
         $search = $filters['search'] ?? null;

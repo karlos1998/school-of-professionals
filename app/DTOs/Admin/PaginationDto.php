@@ -13,6 +13,7 @@ readonly class PaginationDto
         public int $total,
     ) {}
 
+    /** @param LengthAwarePaginator<int, mixed> $paginator */
     public static function fromPaginator(LengthAwarePaginator $paginator): self
     {
         return new self(

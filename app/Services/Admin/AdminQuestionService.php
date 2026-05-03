@@ -4,6 +4,8 @@ namespace App\Services\Admin;
 
 use App\DTOs\Admin\PaginatedResourcePayloadDto;
 use App\Http\Resources\Admin\QuestionCollection;
+use App\Models\Exam;
+use App\Models\Question;
 use App\Repositories\Contracts\AdminExamRepositoryInterface;
 use App\Repositories\Contracts\AdminQuestionRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,7 +23,7 @@ class AdminQuestionService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+            throw (new ModelNotFoundException())->setModel(Exam::class, [$examId]);
         }
 
         $questions = $this->questionRepository->paginateForExam($examId, $perPage);
@@ -40,7 +42,7 @@ class AdminQuestionService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel('exam', [$examId]);
+            throw (new ModelNotFoundException())->setModel(Exam::class, [$examId]);
         }
 
         DB::transaction(function () use ($exam, $data): void {
@@ -54,7 +56,7 @@ class AdminQuestionService
     {
         $question = $this->questionRepository->findById($questionId);
         if ($question === null || $question->exam_id !== $examId) {
-            throw (new ModelNotFoundException())->setModel('question', [$questionId]);
+            throw (new ModelNotFoundException())->setModel(Question::class, [$questionId]);
         }
 
         DB::transaction(function () use ($question, $data): void {
@@ -67,7 +69,7 @@ class AdminQuestionService
     {
         $question = $this->questionRepository->findById($questionId);
         if ($question === null || $question->exam_id !== $examId) {
-            throw (new ModelNotFoundException())->setModel('question', [$questionId]);
+            throw (new ModelNotFoundException())->setModel(Question::class, [$questionId]);
         }
 
         $this->questionRepository->delete($question);

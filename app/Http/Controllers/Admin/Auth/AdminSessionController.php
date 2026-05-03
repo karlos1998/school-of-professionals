@@ -15,8 +15,11 @@ class AdminSessionController extends Controller
 
     public function store(AdminLoginRequest $request): RedirectResponse
     {
+        /** @var array{email:string,password:string} $credentials */
+        $credentials = $request->validated();
+
         $result = $this->adminAuthService->attempt(
-            $request->validated(),
+            $credentials,
             (string) $request->ip(),
         );
 

@@ -36,8 +36,10 @@ class UpdateQuestionRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
-            $correctAnswers = collect($this->input('answers', []))
-                ->filter(fn (array $answer): bool => (bool) ($answer['is_correct'] ?? false))
+            /** @var list<array{content:string,is_correct:bool}> $answers */
+            $answers = $this->input('answers', []);
+            $correctAnswers = collect($answers)
+                ->filter(fn (array $answer): bool => $answer['is_correct'])
                 ->count();
 
             if ($correctAnswers !== 1) {

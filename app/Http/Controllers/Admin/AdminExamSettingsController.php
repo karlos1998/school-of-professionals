@@ -20,7 +20,9 @@ class AdminExamSettingsController extends Controller
 
     public function update(UpdateExamSettingsRequest $request): RedirectResponse
     {
-        $this->adminExamSettingsService->update($request->validated());
+        /** @var array{question_limit:int,passing_threshold:int} $data */
+        $data = $request->validated();
+        $this->adminExamSettingsService->update($data);
 
         return back()->with('success', 'Ustawienia egzaminu zostały zapisane.');
     }

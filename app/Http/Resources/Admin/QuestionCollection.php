@@ -9,13 +9,20 @@ class QuestionCollection extends ResourceCollection
 {
     public $collects = QuestionResource::class;
 
+    /** @return array{data: array<int, array<string, mixed>>} */
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
+            'data' => $this->collection?->values()->all() ?? [],
         ];
     }
 
+    /**
+     * @param mixed $request
+     * @param array<string, mixed> $paginated
+     * @param array<string, mixed> $default
+     * @return array{pagination: array{current_page:int,last_page:int,per_page:int,total:int}}
+     */
     public function paginationInformation($request, $paginated, $default): array
     {
         return [

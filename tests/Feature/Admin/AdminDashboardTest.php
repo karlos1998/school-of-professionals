@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\User;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
 
 it('redirects guest from dashboard to login', function (): void {
-    $this->get('/admin-panel')->assertRedirect('/login');
+    get('/admin-panel')->assertRedirect('/login');
 });
 
 it('shows dashboard modules for authenticated admin', function (): void {
@@ -12,7 +14,7 @@ it('shows dashboard modules for authenticated admin', function (): void {
 
     $admin = User::factory()->create(['email' => 'admin@example.com']);
 
-    $this->actingAs($admin)
+    actingAs($admin)
         ->get('/admin-panel')
         ->assertOk()
         ->assertInertia(fn ($page) => $page
