@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 </script>
 
@@ -8,16 +9,31 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
             <div class="hero-backdrop" />
             <header class="topbar">
                 <v-container class="px-4 px-md-8 layout-container" fluid>
-                    <div class="d-flex align-center ga-3 py-3">
-                        <img
-                            alt="Szkola Zawodowcow"
-                            class="brand-logo"
-                            :src="brandLogo"
-                        >
-                        <div>
-                            <p class="brand-overline">Platforma Egzaminacyjna</p>
-                            <h1 class="brand-title">Testy UDT i WIT</h1>
+                    <div class="d-flex align-center justify-space-between ga-3 py-2">
+                        <div class="d-flex align-center ga-2">
+                            <a
+                                class="brand-logo-link"
+                                href="https://szkolazawodowcow.pl/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <img
+                                    alt="Szkola Zawodowcow"
+                                    class="brand-logo"
+                                    :src="brandLogo"
+                                >
+                            </a>
+                            <div>
+                                <p class="brand-overline">Platforma Egzaminacyjna</p>
+                                <h1 class="brand-title">Testy UDT i WIT</h1>
+                            </div>
                         </div>
+                        <Link
+                            class="producer-link"
+                            href="/"
+                        >
+                            Strona główna
+                        </Link>
                     </div>
                 </v-container>
             </header>
@@ -82,7 +98,7 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .content-container {
-    min-height: calc(100vh - 84px);
+    min-height: calc(100vh - 64px);
 }
 
 .topbar {
@@ -92,23 +108,52 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .brand-logo {
-    width: 144px;
+    width: 84px;
     max-width: 45vw;
-    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+.brand-logo-link {
+    display: inline-flex;
 }
 
 .brand-overline {
     letter-spacing: 0.13em;
     text-transform: uppercase;
     color: rgba(236, 198, 98, 0.9);
-    font-size: 0.66rem;
-    margin-bottom: 2px;
+    font-size: 0.52rem;
+    margin-bottom: 1px;
 }
 
 .brand-title {
     color: #f6f6f7;
-    font-size: clamp(1.02rem, 1.7vw, 1.5rem);
+    font-size: clamp(0.76rem, 1.2vw, 1rem);
     line-height: 1.1;
+}
+
+.producer-link {
+    color: #f2d487;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.7rem;
+    border: 1px solid rgba(227, 185, 79, 0.55);
+    border-radius: 999px;
+    padding: 6px 10px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.producer-link:hover {
+    color: #ffe4a3;
+    border-color: rgba(240, 207, 122, 0.85);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+    .producer-link {
+        font-size: 0.62rem;
+        padding: 5px 8px;
+    }
 }
 
 .site-footer {
