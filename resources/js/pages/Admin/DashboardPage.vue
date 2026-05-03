@@ -6,6 +6,7 @@ type ModuleCard = {
     title: string;
     description: string;
     url: string;
+    testId: string;
 };
 
 const props = defineProps<{ modules: ModuleCard[] }>();
@@ -20,7 +21,7 @@ const props = defineProps<{ modules: ModuleCard[] }>();
                     <v-card-title>{{ moduleItem.title }}</v-card-title>
                     <v-card-text>{{ moduleItem.description }}</v-card-text>
                     <v-card-actions>
-                        <v-btn color="primary" @click="router.visit(moduleItem.url)">Przejdź</v-btn>
+                        <v-btn :data-testid="moduleItem.testId" color="primary" @click="router.visit(moduleItem.url)">Przejdź</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>

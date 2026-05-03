@@ -36,7 +36,7 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
 <template>
     <AdminPageLayout>
         <template #header-actions>
-            <v-btn color="primary" @click="openCreate">Dodaj klasę</v-btn>
+            <v-btn color="primary" dusk="admin-classes-add-button" @click="openCreate">Dodaj klasę</v-btn>
         </template>
 
         <v-data-table-server

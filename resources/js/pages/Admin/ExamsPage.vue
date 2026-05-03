@@ -51,7 +51,7 @@ const applyFilters = (): void => {
 <template>
     <AdminPageLayout>
         <template #header-actions>
-            <v-btn color="primary" @click="openCreate">Dodaj test</v-btn>
+            <v-btn color="primary" dusk="admin-tests-add-button" @click="openCreate">Dodaj test</v-btn>
         </template>
         <div class="d-flex ga-3 align-end mb-4">
             <v-select

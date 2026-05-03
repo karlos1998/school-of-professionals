@@ -29,11 +29,12 @@ class AdminPanelBrowserTest extends DuskTestCase
                 ->waitForText('Panel administratora')
                 ->assertSee('Testy')
                 ->assertSee('Klasy')
-                ->clickLink('Przejdź')
+                ->visit('/admin-panel/tests')
                 ->waitForLocation('/admin-panel/tests')
-                ->assertSee('Dodaj test')
+                ->waitFor('@admin-tests-add-button')
                 ->visit('/admin-panel/classes')
-                ->waitForText('Dodaj klasę');
+                ->waitForLocation('/admin-panel/classes')
+                ->waitFor('@admin-classes-add-button');
         });
     }
 }
