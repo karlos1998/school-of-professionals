@@ -18,8 +18,8 @@ const submit = (): void => {
                 <v-card-title>Logowanie do panelu admina</v-card-title>
                 <v-card-text>
                     <v-form @submit.prevent="submit">
-                        <v-text-field v-model="form.email" label="Email" type="email" />
-                        <v-text-field v-model="form.password" label="Hasło" type="password" />
+                        <v-text-field v-model="form.email" label="Email" type="email" :error-messages="form.errors.email" />
+                        <v-text-field v-model="form.password" label="Hasło" type="password" :error-messages="form.errors.password" />
                         <v-btn type="submit" color="primary" block :loading="form.processing">Zaloguj</v-btn>
                     </v-form>
                 </v-card-text>

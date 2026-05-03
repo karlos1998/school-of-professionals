@@ -3,37 +3,32 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\Admin\AdminLoginRequest;
+use App\Services\Admin\AdminAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AdminSessionController extends Controller
 {
-    public function store(Request $request): RedirectResponse
+    public function __construct(public AdminAuthService $adminAuthService) {}
+
+    public function store(AdminLoginRequest $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $result = $this->adminAuthService->attempt(
+            $request->validated(),
+            (string) $request->ip(),
+        );
 
-        $allowedCredentials = [
-            config('app.admin_login') => config('app.admin_password'),
-            config('app.super_admin_login') => config('app.super_admin_password'),
-        ];
-
-        $expectedPassword = $allowedCredentials[$credentials['email']] ?? null;
-
-        if (! $expectedPassword || $expectedPassword !== $credentials['password']) {
-            return back()->withErrors(['email' => 'Nieprawidłowe dane logowania.'])->onlyInput('email');
+        if (! $result->success || $result->user === null) {
+            return back()
+                ->withErrors([
+                    'email' => $result->errorMessage ?? 'Błąd logowania.',
+                ])
+                ->onlyInput('email');
         }
 
-        $user = User::query()->where('email', $credentials['email'])->first();
-        if (! $user) {
-            return back()->withErrors(['email' => 'Użytkownik nie istnieje. Uruchom komendę admin:sync.'])->onlyInput('email');
-        }
-
-        Auth::login($user);
+        Auth::login($result->user);
         $request->session()->regenerate();
 
         return redirect()->route('admin.dashboard');
