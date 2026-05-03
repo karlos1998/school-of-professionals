@@ -23,7 +23,7 @@ const recentTestRoutes = computed(() => examRunnerStore.recentTestRoutes);
             <v-col cols="12" md="10" lg="8">
                 <v-card class="panel-card" elevation="8" rounded="xl">
                     <v-card-title class="text-h5 font-weight-bold">Witaj w platformie testowej</v-card-title>
-                    <v-card-subtitle>Wybierz obszar egzaminow, aby przejsc do listy testow.</v-card-subtitle>
+                    <v-card-subtitle>Wybierz obszar egzaminów, aby przejść do listy testów.</v-card-subtitle>
                     <v-card-text>
                         <v-row>
                             <v-col v-for="authority in authorities" :key="authority.slug" cols="12" md="6">
@@ -32,7 +32,7 @@ const recentTestRoutes = computed(() => examRunnerStore.recentTestRoutes);
                                         <p class="text-overline text-medium-emphasis">Egzaminy</p>
                                         <h2 class="text-h5 font-weight-bold">{{ authority.name }}</h2>
                                         <p class="text-body-2 text-medium-emphasis mt-2">
-                                            Przejdz do katalogu testow i rozpocznij rozwiazywanie.
+                                            Przejdź do katalogu testów i rozpocznij rozwiązywanie.
                                         </p>
                                     </v-card-text>
                                 </v-card>
@@ -46,7 +46,7 @@ const recentTestRoutes = computed(() => examRunnerStore.recentTestRoutes);
                             rounded="lg"
                         >
                             <v-card-text>
-                                <p class="text-overline text-medium-emphasis mb-1">Szybki powrot</p>
+                                <p class="text-overline text-medium-emphasis mb-1">Szybki powrót</p>
                                 <h2 class="text-h6 font-weight-bold mb-3">Ostatnio odwiedzane testy</h2>
 
                                 <v-row>
@@ -68,7 +68,7 @@ const recentTestRoutes = computed(() => examRunnerStore.recentTestRoutes);
                                                     variant="outlined"
                                                     size="small"
                                                 >
-                                                    Przejdz
+                                                    Przejdź
                                                 </v-btn>
                                             </div>
                                         </v-sheet>

@@ -64,10 +64,10 @@ const openClassTest = (classItem: TestClass): void => {
                 <v-card class="panel-card" elevation="8" rounded="xl">
                     <v-card-title class="d-flex align-center justify-space-between ga-3 flex-wrap">
                         <div>
-                            <p class="text-caption text-medium-emphasis">Katalog testow</p>
+                            <p class="text-caption text-medium-emphasis">Katalog testów</p>
                             <h1 class="text-h5 font-weight-bold">{{ authority.name }}</h1>
                         </div>
-                        <v-btn :href="homeUrl" prepend-icon="mdi-arrow-left" variant="outlined">Powrot</v-btn>
+                        <v-btn :href="homeUrl" prepend-icon="mdi-arrow-left" variant="outlined">Powrót</v-btn>
                     </v-card-title>
                     <v-card-text>
                         <v-row>
@@ -86,7 +86,7 @@ const openClassTest = (classItem: TestClass): void => {
                                         variant="flat"
                                         prepend-icon="mdi-shape-outline"
                                     >
-                                        Wybierz klase
+                                        Wybierz klasę
                                     </v-chip>
                                 </v-sheet>
                             </v-col>
@@ -99,7 +99,7 @@ const openClassTest = (classItem: TestClass): void => {
         <v-dialog v-model="classDialog" max-width="460">
             <v-card class="class-dialog" rounded="xl">
                 <v-card-title class="class-dialog__title">
-                    <span>Wybierz klase: {{ selectedTestName }}</span>
+                    <span>Wybierz klasę: {{ selectedTestName }}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-list class="class-list bg-transparent">

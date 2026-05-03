@@ -50,7 +50,7 @@ const examModes = computed<ModeRoute[]>(() => {
                                 <span v-if="selectedClass">(Klasa {{ selectedClass.name }})</span>
                             </h1>
                         </div>
-                        <v-btn :href="backUrl" prepend-icon="mdi-arrow-left" variant="outlined">Lista testow</v-btn>
+                        <v-btn :href="backUrl" prepend-icon="mdi-arrow-left" variant="outlined">Lista testów</v-btn>
                     </v-card-title>
 
                     <v-card-text>

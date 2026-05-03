@@ -142,9 +142,9 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                             <v-chip color="info" variant="tonal">Pytania: {{ store.totalQuestions }}</v-chip>
                             <v-chip v-if="!isStudyMode" color="success" variant="tonal">Poprawne: {{ store.correctAnswersCount }}</v-chip>
                             <v-btn v-if="!isStudyMode" color="warning" variant="tonal" prepend-icon="mdi-refresh" @click="restartSession">
-                                Zacznij od poczatku
+                                Zacznij od początku
                             </v-btn>
-                            <v-btn :href="backUrl" variant="text" prepend-icon="mdi-format-list-bulleted">Lista testow</v-btn>
+                            <v-btn :href="backUrl" variant="text" prepend-icon="mdi-format-list-bulleted">Lista testów</v-btn>
                         </div>
 
                         <template v-if="isStudyMode">
@@ -205,9 +205,9 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
 
                         <template v-else-if="shouldShowExamSummary">
                             <v-alert :color="isExamPassed ? 'success' : 'error'" variant="tonal" class="mb-4">
-                                Wynik koncowy: {{ store.correctAnswersCount }} / {{ store.totalQuestions }}
+                                Wynik końcowy: {{ store.correctAnswersCount }} / {{ store.totalQuestions }}
                                 <br>
-                                Poprawne: {{ store.correctAnswersCount }}, bledne: {{ incorrectAnswersCount }}
+                                Poprawne: {{ store.correctAnswersCount }}, błędne: {{ incorrectAnswersCount }}
                                 <br>
                                 Status: {{ isExamPassed ? 'ZDANE' : 'NIEZDANE' }} (prog: {{ props.examConfig.passingThreshold }})
                             </v-alert>
@@ -222,7 +222,7 @@ const questionResult = (question: ExamQuestion): 'success' | 'error' => {
                                 <v-card-title class="d-flex justify-space-between align-center ga-2">
                                     <span>Pytanie {{ question.position }}</span>
                                     <v-chip :color="questionResult(question)" size="small" variant="flat">
-                                        {{ questionResult(question) === 'success' ? 'Poprawnie' : 'Blednie' }}
+                                        {{ questionResult(question) === 'success' ? 'Poprawnie' : 'Błędnie' }}
                                     </v-chip>
                                 </v-card-title>
                                 <v-card-text>
