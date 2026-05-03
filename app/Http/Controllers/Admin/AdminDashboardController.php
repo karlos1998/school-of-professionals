@@ -22,6 +22,11 @@ class AdminDashboardController extends Controller
                     'description' => 'Zarządzanie klasami egzaminów',
                     'url' => '/admin-panel/classes',
                 ],
+                [
+                    'title' => 'Ustawienia egzaminu',
+                    'description' => 'Konfiguracja liczby pytań i progu zaliczenia',
+                    'url' => '/admin-panel/exam-settings',
+                ],
             ],
         ]);
     }

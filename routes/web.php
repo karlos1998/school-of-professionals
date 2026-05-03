@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminExamController;
 use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminExamSettingsController;
 use App\Http\Controllers\Admin\Auth\AdminLoginPageController;
 use App\Http\Controllers\Admin\Auth\AdminSessionController;
 use App\Http\Controllers\ExamFlow\AuthorityTestsPageController;
@@ -32,6 +33,8 @@ Route::prefix('/admin-panel')->name('admin.')->group(function () {
         Route::post('/classes', [AdminClassController::class, 'store'])->name('classes.store');
         Route::put('/classes/{classId}', [AdminClassController::class, 'update'])->name('classes.update');
         Route::delete('/classes/{classId}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
+        Route::get('/exam-settings', [AdminExamSettingsController::class, 'index'])->name('exam-settings.index');
+        Route::put('/exam-settings', [AdminExamSettingsController::class, 'update'])->name('exam-settings.update');
         Route::get('/tests/{examId}/questions', [AdminQuestionController::class, 'index'])->name('tests.questions.index');
         Route::post('/tests/{examId}/questions', [AdminQuestionController::class, 'store'])->name('tests.questions.store');
         Route::put('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'update'])->name('tests.questions.update');
