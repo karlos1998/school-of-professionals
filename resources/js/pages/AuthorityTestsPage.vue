@@ -2,6 +2,7 @@
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import { useExamRunnerStore } from '@/stores/examRunnerStore';
 
 interface TestClass {
     name: string;
@@ -29,12 +30,15 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const examRunnerStore = useExamRunnerStore();
 
 const classDialog = ref(false);
 const selectedTestName = ref('');
 const classOptions = ref<TestClass[]>([]);
 
 const openTest = (test: TestItem): void => {
+    examRunnerStore.rememberRecentTestRoute(`${props.authority.name} - ${test.name}`, test.url);
+
     if (props.authority.slug === 'udt' && test.hasClassSelection) {
         selectedTestName.value = test.name;
         classOptions.value = test.classes;
@@ -43,6 +47,13 @@ const openTest = (test: TestItem): void => {
     }
 
     router.visit(test.url);
+};
+
+const openClassTest = (classItem: TestClass): void => {
+    examRunnerStore.rememberRecentTestRoute(
+        `${props.authority.name} - ${selectedTestName.value} (Klasa ${classItem.name})`,
+        classItem.url,
+    );
 };
 </script>
 
@@ -98,6 +109,7 @@ const openTest = (test: TestItem): void => {
                             :href="classItem.url"
                             rounded="lg"
                             class="class-item"
+                            @click="openClassTest(classItem)"
                         >
                             <template #prepend>
                                 <v-icon icon="mdi-medal-outline" color="secondary" />
