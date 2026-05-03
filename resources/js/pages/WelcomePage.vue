@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import { useExamRunnerStore } from '@/stores/examRunnerStore';
 
 interface Props {
     authorities: Array<{
@@ -10,6 +12,9 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const examRunnerStore = useExamRunnerStore();
+const recentTestRoutes = computed(() => examRunnerStore.recentTestRoutes);
 </script>
 
 <template>
@@ -33,6 +38,44 @@ defineProps<Props>();
                                 </v-card>
                             </v-col>
                         </v-row>
+
+                        <v-card
+                            v-if="recentTestRoutes.length > 0"
+                            class="recent-tests-card mt-6"
+                            variant="flat"
+                            rounded="lg"
+                        >
+                            <v-card-text>
+                                <p class="text-overline text-medium-emphasis mb-1">Szybki powrot</p>
+                                <h2 class="text-h6 font-weight-bold mb-3">Ostatnio odwiedzane testy</h2>
+
+                                <v-row>
+                                    <v-col
+                                        v-for="recentRoute in recentTestRoutes"
+                                        :key="recentRoute.url"
+                                        cols="12"
+                                        md="6"
+                                    >
+                                        <v-sheet class="recent-route-item" border rounded="lg">
+                                            <div class="d-flex justify-space-between align-center ga-3">
+                                                <div>
+                                                    <p class="text-body-2 font-weight-medium mb-0">{{ recentRoute.label }}</p>
+                                                    <p class="text-caption text-medium-emphasis mb-0">{{ recentRoute.url }}</p>
+                                                </div>
+                                                <v-btn
+                                                    :href="recentRoute.url"
+                                                    color="primary"
+                                                    variant="outlined"
+                                                    size="small"
+                                                >
+                                                    Przejdz
+                                                </v-btn>
+                                            </div>
+                                        </v-sheet>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -63,6 +106,17 @@ defineProps<Props>();
     transform: translateY(-2px) scale(1.01);
     border-color: rgba(186, 142, 41, 0.85);
     box-shadow: 0 10px 24px rgba(22, 31, 45, 0.12);
+}
+
+.recent-tests-card {
+    border: 1px solid rgba(214, 169, 62, 0.42);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 234, 0.8));
+}
+
+.recent-route-item {
+    padding: 12px;
+    border: 1px solid rgba(214, 169, 62, 0.35);
+    background: rgba(255, 255, 255, 0.82);
 }
 
 @media (max-width: 700px) {

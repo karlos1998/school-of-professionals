@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 </script>
 
@@ -8,16 +9,31 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
             <div class="hero-backdrop" />
             <header class="topbar">
                 <v-container class="px-4 px-md-8 layout-container" fluid>
-                    <div class="d-flex align-center ga-4 py-4">
-                        <img
-                            alt="Szkola Zawodowcow"
-                            class="brand-logo"
-                            :src="brandLogo"
-                        >
-                        <div>
-                            <p class="brand-overline">Platforma Egzaminacyjna</p>
-                            <h1 class="brand-title">Testy UDT i WIT</h1>
+                    <div class="d-flex align-center justify-space-between ga-3 py-2">
+                        <div class="d-flex align-center ga-2">
+                            <a
+                                class="brand-logo-link"
+                                href="https://szkolazawodowcow.pl/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <img
+                                    alt="Szkola Zawodowcow"
+                                    class="brand-logo"
+                                    :src="brandLogo"
+                                >
+                            </a>
+                            <div>
+                                <p class="brand-overline">Platforma Egzaminacyjna</p>
+                                <h1 class="brand-title">Testy UDT i WIT</h1>
+                            </div>
                         </div>
+                        <Link
+                            class="producer-link"
+                            href="/"
+                        >
+                            Strona główna
+                        </Link>
                     </div>
                 </v-container>
             </header>
@@ -47,8 +63,8 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
     z-index: -1;
     background:
         radial-gradient(circle at 10% 12%, rgba(244, 199, 90, 0.2), transparent 34%),
-        radial-gradient(circle at 84% 18%, rgba(16, 36, 60, 0.2), transparent 33%),
-        linear-gradient(167deg, #f5f5f6 0%, #f0f1f3 44%, #ebedf0 100%);
+        radial-gradient(circle at 84% 18%, rgba(64, 66, 72, 0.18), transparent 33%),
+        linear-gradient(167deg, #f4f4f5 0%, #efeff1 44%, #e8e8eb 100%);
 }
 
 .hero-backdrop::before,
@@ -82,38 +98,67 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .content-container {
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 64px);
 }
 
 .topbar {
-    background: linear-gradient(145deg, #0c1016 0%, #101b2c 52%, #1d3049 100%);
+    background: linear-gradient(145deg, #3a3c41 0%, #4a4d53 52%, #5a5d64 100%);
     border-bottom: 1px solid rgba(227, 185, 79, 0.48);
-    box-shadow: 0 10px 25px rgba(7, 12, 19, 0.36);
+    box-shadow: 0 10px 25px rgba(38, 40, 44, 0.3);
 }
 
 .brand-logo {
-    width: 180px;
+    width: 84px;
     max-width: 45vw;
-    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+.brand-logo-link {
+    display: inline-flex;
 }
 
 .brand-overline {
     letter-spacing: 0.13em;
     text-transform: uppercase;
     color: rgba(236, 198, 98, 0.9);
-    font-size: 0.74rem;
-    margin-bottom: 4px;
+    font-size: 0.52rem;
+    margin-bottom: 1px;
 }
 
 .brand-title {
-    color: #f4f8ff;
-    font-size: clamp(1.2rem, 2vw, 1.9rem);
+    color: #f6f6f7;
+    font-size: clamp(0.76rem, 1.2vw, 1rem);
     line-height: 1.1;
+}
+
+.producer-link {
+    color: #f2d487;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.7rem;
+    border: 1px solid rgba(227, 185, 79, 0.55);
+    border-radius: 999px;
+    padding: 6px 10px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.producer-link:hover {
+    color: #ffe4a3;
+    border-color: rgba(240, 207, 122, 0.85);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+    .producer-link {
+        font-size: 0.62rem;
+        padding: 5px 8px;
+    }
 }
 
 .site-footer {
     border-top: 1px solid rgba(226, 182, 75, 0.35);
-    background: linear-gradient(145deg, rgba(17, 27, 43, 0.96), rgba(26, 41, 62, 0.96));
+    background: linear-gradient(145deg, rgba(58, 60, 65, 0.96), rgba(78, 81, 88, 0.96));
     backdrop-filter: blur(3px);
 }
 

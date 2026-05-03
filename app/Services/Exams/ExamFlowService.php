@@ -16,12 +16,14 @@ use App\Enums\ExamMode;
 use App\Http\Resources\ExamFlow\ExamSessionResource;
 use App\Models\Exam;
 use App\Models\ExamAuthority;
+use App\Repositories\Contracts\ExamSettingsRepositoryInterface;
 use App\Repositories\Contracts\ExamRepositoryInterface;
 
 class ExamFlowService
 {
     public function __construct(
         private readonly ExamRepositoryInterface $examRepository,
+        private readonly ExamSettingsRepositoryInterface $examSettingsRepository,
     ) {}
 
     /** @return list<AuthorityLinkDto> */
@@ -286,7 +288,10 @@ class ExamFlowService
 
     public int $questionLimit {
         get {
-            $configured = (int) config('exam.session.question_limit', 20);
+            $configured = $this->examSettingsRepository->getInt(
+                'exam.session.question_limit',
+                (int) config('exam.session.question_limit', 20),
+            );
 
             return $configured > 0 ? $configured : 20;
         }
@@ -294,7 +299,10 @@ class ExamFlowService
 
     public int $passingThreshold {
         get {
-            $configured = (int) config('exam.session.passing_threshold', 16);
+            $configured = $this->examSettingsRepository->getInt(
+                'exam.session.passing_threshold',
+                (int) config('exam.session.passing_threshold', 16),
+            );
 
             return $configured >= 0 ? $configured : 16;
         }

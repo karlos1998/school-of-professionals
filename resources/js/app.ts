@@ -20,13 +20,13 @@ const vuetify = createVuetify({
             school: {
                 dark: false,
                 colors: {
-                    background: '#f4f8ff',
+                    background: '#efeff1',
                     surface: '#ffffff',
-                    primary: '#0f4c81',
+                    primary: '#45474d',
                     secondary: '#f8b400',
-                    info: '#2f7fc4',
+                    info: '#61646b',
                     success: '#1e824c',
-                    warning: '#f2a900',
+                    warning: '#e3b84f',
                     error: '#b42318',
                 },
             },

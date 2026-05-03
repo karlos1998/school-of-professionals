@@ -11,6 +11,14 @@ interface SessionState {
     checkedQuestionIds: number[];
 }
 
+interface RecentTestRoute {
+    label: string;
+    url: string;
+    visitedAt: string;
+}
+
+const DEFAULT_RECENT_TEST_ROUTES_LIMIT = 2;
+
 const defaultSessionState = (): SessionState => ({
     mode: 'sequential',
     questionOrder: [],
@@ -29,6 +37,8 @@ export const useExamRunnerStore = defineStore(
             passingThreshold: 16,
         });
         const session = ref<SessionState>(defaultSessionState());
+        const recentTestRoutesLimit = ref<number>(DEFAULT_RECENT_TEST_ROUTES_LIMIT);
+        const recentTestRoutes = ref<RecentTestRoute[]>([]);
 
         const orderedQuestions = computed<ExamQuestion[]>(() => {
             if (!exam.value || session.value.questionOrder.length === 0) {
@@ -222,6 +232,58 @@ export const useExamRunnerStore = defineStore(
             return session.value.answersByQuestion[currentQuestionId] !== undefined;
         };
 
+        const normalizeRecentRouteUrl = (url: string): string | null => {
+            if (!url) {
+                return null;
+            }
+
+            if (url.startsWith('/')) {
+                return url;
+            }
+
+            try {
+                const parsedUrl = new URL(url);
+                const currentOrigin = typeof window !== 'undefined' ? window.location.origin : null;
+
+                if (currentOrigin && parsedUrl.origin === currentOrigin) {
+                    return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+                }
+            } catch {
+                return null;
+            }
+
+            return null;
+        };
+
+        const rememberRecentTestRoute = (label: string, url: string): void => {
+            const normalizedUrl = normalizeRecentRouteUrl(url);
+
+            if (!normalizedUrl) {
+                return;
+            }
+
+            const now = new Date().toISOString();
+            const deduplicated = recentTestRoutes.value.filter((route) => route.url !== normalizedUrl);
+
+            recentTestRoutes.value = [
+                {
+                    label,
+                    url: normalizedUrl,
+                    visitedAt: now,
+                },
+                ...deduplicated,
+            ].slice(0, recentTestRoutesLimit.value);
+        };
+
+        const setRecentTestRoutesLimit = (limit: number): void => {
+            if (!Number.isFinite(limit) || limit < 1) {
+                return;
+            }
+
+            recentTestRoutesLimit.value = Math.floor(limit);
+            recentTestRoutes.value = recentTestRoutes.value.slice(0, recentTestRoutesLimit.value);
+        };
+
         return {
             exam,
             examKey,
@@ -233,6 +295,8 @@ export const useExamRunnerStore = defineStore(
             totalQuestions,
             correctAnswersCount,
             isSessionFinished,
+            recentTestRoutes,
+            recentTestRoutesLimit,
             loadExam,
             activateMode,
             startSession,
@@ -244,11 +308,13 @@ export const useExamRunnerStore = defineStore(
             selectedAnswerId,
             correctAnswerId,
             canGoToNextQuestion,
+            rememberRecentTestRoute,
+            setRecentTestRoutesLimit,
         };
     },
     {
         persist: {
-            pick: ['exam', 'examKey', 'examConfig', 'session'],
+            pick: ['exam', 'examKey', 'examConfig', 'session', 'recentTestRoutes', 'recentTestRoutesLimit'],
         },
     },
 );

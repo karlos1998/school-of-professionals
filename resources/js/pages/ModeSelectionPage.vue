@@ -127,18 +127,18 @@ const examModes = computed<ModeRoute[]>(() => {
 }
 
 .mode-section--exam {
-    border-color: rgba(26, 56, 88, 0.32);
-    background: linear-gradient(155deg, rgba(241, 247, 255, 0.88), rgba(232, 241, 251, 0.72));
+    border-color: rgba(88, 90, 96, 0.3);
+    background: linear-gradient(155deg, rgba(247, 247, 248, 0.9), rgba(237, 237, 239, 0.76));
 }
 
 .section-title {
     font-size: 1rem;
     font-weight: 700;
-    color: #203d60;
+    color: #45474d;
 }
 
 .mode-item--exam {
-    border-color: rgba(54, 99, 146, 0.45);
-    background: linear-gradient(150deg, rgba(250, 254, 255, 0.95), rgba(230, 240, 251, 0.82));
+    border-color: rgba(96, 99, 108, 0.42);
+    background: linear-gradient(150deg, rgba(253, 253, 253, 0.95), rgba(240, 240, 242, 0.84));
 }
 </style>

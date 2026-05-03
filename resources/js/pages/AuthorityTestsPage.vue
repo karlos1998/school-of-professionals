@@ -2,6 +2,7 @@
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import { useExamRunnerStore } from '@/stores/examRunnerStore';
 
 interface TestClass {
     name: string;
@@ -29,12 +30,15 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const examRunnerStore = useExamRunnerStore();
 
 const classDialog = ref(false);
 const selectedTestName = ref('');
 const classOptions = ref<TestClass[]>([]);
 
 const openTest = (test: TestItem): void => {
+    examRunnerStore.rememberRecentTestRoute(`${props.authority.name} - ${test.name}`, test.url);
+
     if (test.hasClassSelection) {
         selectedTestName.value = test.name;
         classOptions.value = test.classes;
@@ -43,6 +47,13 @@ const openTest = (test: TestItem): void => {
     }
 
     router.visit(test.url);
+};
+
+const openClassTest = (classItem: TestClass): void => {
+    examRunnerStore.rememberRecentTestRoute(
+        `${props.authority.name} - ${selectedTestName.value} (Klasa ${classItem.name})`,
+        classItem.url,
+    );
 };
 </script>
 
@@ -98,6 +109,7 @@ const openTest = (test: TestItem): void => {
                             :href="classItem.url"
                             rounded="lg"
                             class="class-item"
+                            @click="openClassTest(classItem)"
                         >
                             <template #prepend>
                                 <v-icon icon="mdi-medal-outline" color="secondary" />
@@ -148,7 +160,7 @@ const openTest = (test: TestItem): void => {
 }
 
 .class-dialog__title {
-    background: linear-gradient(145deg, #0f1722, #18283b);
+    background: linear-gradient(145deg, #3b3d42, #4d5057);
     color: #f3d68b;
     border-bottom: 1px solid rgba(218, 174, 67, 0.42);
 }
