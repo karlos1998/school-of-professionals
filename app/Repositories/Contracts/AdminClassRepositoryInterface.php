@@ -17,5 +17,7 @@ interface AdminClassRepositoryInterface
     /** @param array{name:string,slug:string} $data */
     public function update(ExamClass $examClass, array $data): ExamClass;
 
+    public function slugExists(string $slug, ?int $ignoreId = null): bool;
+
     public function delete(ExamClass $examClass): void;
 }

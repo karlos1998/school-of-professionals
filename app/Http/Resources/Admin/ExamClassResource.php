@@ -12,7 +12,6 @@ class ExamClassResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'slug' => $this->slug,
             'exams_count' => $this->exams_count ?? 0,
         ];
     }

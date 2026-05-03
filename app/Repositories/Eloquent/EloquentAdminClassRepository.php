@@ -35,6 +35,17 @@ class EloquentAdminClassRepository extends BaseEloquentRepository implements Adm
         return $examClass->refresh();
     }
 
+    public function slugExists(string $slug, ?int $ignoreId = null): bool
+    {
+        $query = ExamClass::query()->where('slug', $slug);
+
+        if ($ignoreId !== null) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return $query->exists();
+    }
+
     public function delete(ExamClass $examClass): void
     {
         $examClass->delete();

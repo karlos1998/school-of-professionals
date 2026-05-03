@@ -17,7 +17,6 @@ class StoreClassRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:120'],
-            'slug' => ['required', 'string', 'max:120', 'alpha_dash', 'unique:exam_classes,slug'],
         ];
     }
 }

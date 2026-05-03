@@ -6,6 +6,7 @@ use App\DTOs\Admin\PaginatedResourcePayloadDto;
 use App\Http\Resources\Admin\ExamClassCollection;
 use App\Repositories\Contracts\AdminClassRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Str;
 
 class AdminClassService
 {
@@ -24,13 +25,16 @@ class AdminClassService
         ];
     }
 
-    /** @param array{name:string,slug:string} $data */
+    /** @param array{name:string} $data */
     public function create(array $data): void
     {
-        $this->classRepository->create($data);
+        $this->classRepository->create([
+            'name' => $data['name'],
+            'slug' => $this->generateUniqueSlug($data['name']),
+        ]);
     }
 
-    /** @param array{name:string,slug:string} $data */
+    /** @param array{name:string} $data */
     public function update(int $classId, array $data): void
     {
         $examClass = $this->classRepository->findById($classId);
@@ -38,7 +42,10 @@ class AdminClassService
             throw (new ModelNotFoundException())->setModel('exam_class', [$classId]);
         }
 
-        $this->classRepository->update($examClass, $data);
+        $this->classRepository->update($examClass, [
+            'name' => $data['name'],
+            'slug' => $this->generateUniqueSlug($data['name'], $classId),
+        ]);
     }
 
     public function delete(int $classId): void
@@ -49,5 +56,20 @@ class AdminClassService
         }
 
         $this->classRepository->delete($examClass);
+    }
+
+    private function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($name);
+        $slugRoot = $baseSlug !== '' ? $baseSlug : 'klasa';
+        $slug = $slugRoot;
+        $counter = 1;
+
+        while ($this->classRepository->slugExists($slug, $ignoreId)) {
+            $slug = "{$slugRoot}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }

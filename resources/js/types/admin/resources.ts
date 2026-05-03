@@ -39,6 +39,5 @@ export type PaginationResource = {
 export type ExamClassResource = {
     id: number;
     name: string;
-    slug: string;
     exams_count: number;
 };

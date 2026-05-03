@@ -12,7 +12,6 @@ const modal = ref(false);
 const editId = ref<number | null>(null);
 const form = useForm({
     name: '',
-    slug: '',
 });
 
 const openCreate = (): void => {
@@ -24,7 +23,6 @@ const openCreate = (): void => {
 const openEdit = (examClass: ExamClassResource): void => {
     editId.value = examClass.id;
     form.name = examClass.name;
-    form.slug = examClass.slug;
     modal.value = true;
 };
 
@@ -45,7 +43,6 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
             :items="props.classes.data"
             :headers="[
                 { title: 'Nazwa', key: 'name' },
-                { title: 'Slug', key: 'slug' },
                 { title: 'Egzaminy', key: 'exams_count' },
                 { title: 'Akcje', key: 'actions', sortable: false },
             ]"
@@ -65,7 +62,6 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
                 <v-card-title>{{ editId ? 'Edytuj klasę' : 'Nowa klasa' }}</v-card-title>
                 <v-card-text class="d-flex flex-column ga-3">
                     <v-text-field v-model="form.name" label="Nazwa" />
-                    <v-text-field v-model="form.slug" label="Slug" />
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer />
