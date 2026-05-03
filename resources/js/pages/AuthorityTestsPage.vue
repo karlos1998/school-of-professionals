@@ -148,7 +148,7 @@ const openTest = (test: TestItem): void => {
 }
 
 .class-dialog__title {
-    background: linear-gradient(145deg, #0f1722, #18283b);
+    background: linear-gradient(145deg, #3b3d42, #4d5057);
     color: #f3d68b;
     border-bottom: 1px solid rgba(218, 174, 67, 0.42);
 }
