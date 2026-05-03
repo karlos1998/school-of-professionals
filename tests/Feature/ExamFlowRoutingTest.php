@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use Database\Seeders\ExamSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ExamFlowRoutingTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_it_renders_welcome_page_with_available_authorities(): void
     {
         $this->seed(ExamSeeder::class);

@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminExamController;
+use App\Http\Controllers\Admin\AdminQuestionController;
+use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminExamSettingsController;
+use App\Http\Controllers\Admin\Auth\AdminLoginPageController;
+use App\Http\Controllers\Admin\Auth\AdminSessionController;
 use App\Http\Controllers\ExamFlow\AuthorityTestsPageController;
 use App\Http\Controllers\ExamFlow\ExamSessionPageController;
 use App\Http\Controllers\ExamFlow\ModeSelectionPageController;
@@ -7,6 +14,33 @@ use App\Http\Controllers\ExamFlow\WelcomePageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomePageController::class)->name('exam-flow.welcome');
+Route::redirect('/login', '/admin-panel/login')->name('login');
+
+Route::prefix('/admin-panel')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', AdminLoginPageController::class)->name('login');
+        Route::post('/login', [AdminSessionController::class, 'store'])->name('session.store');
+    });
+
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::post('/logout', [AdminSessionController::class, 'destroy'])->name('session.destroy');
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
+        Route::get('/tests', [AdminExamController::class, 'index'])->name('tests.index');
+        Route::post('/tests', [AdminExamController::class, 'store'])->name('tests.store');
+        Route::put('/tests/{examId}', [AdminExamController::class, 'update'])->name('tests.update');
+        Route::delete('/tests/{examId}', [AdminExamController::class, 'destroy'])->name('tests.destroy');
+        Route::get('/classes', [AdminClassController::class, 'index'])->name('classes.index');
+        Route::post('/classes', [AdminClassController::class, 'store'])->name('classes.store');
+        Route::put('/classes/{classId}', [AdminClassController::class, 'update'])->name('classes.update');
+        Route::delete('/classes/{classId}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
+        Route::get('/exam-settings', [AdminExamSettingsController::class, 'index'])->name('exam-settings.index');
+        Route::put('/exam-settings', [AdminExamSettingsController::class, 'update'])->name('exam-settings.update');
+        Route::get('/tests/{examId}/questions', [AdminQuestionController::class, 'index'])->name('tests.questions.index');
+        Route::post('/tests/{examId}/questions', [AdminQuestionController::class, 'store'])->name('tests.questions.store');
+        Route::put('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'update'])->name('tests.questions.update');
+        Route::delete('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'destroy'])->name('tests.questions.destroy');
+    });
+});
 
 Route::prefix('/egzaminy')->group(function () {
     Route::get('/{authority}', AuthorityTestsPageController::class)->name('exam-flow.authority-tests');

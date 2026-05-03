@@ -53,6 +53,10 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'admin_login' => env('ADMIN_LOGIN'),
+    'admin_password' => env('ADMIN_PASSWORD'),
+    'super_admin_login' => env('SUPER_ADMIN_LOGIN'),
+    'super_admin_password' => env('SUPER_ADMIN_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,11 +82,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'pl'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'pl'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'pl_PL'),
 
     /*
     |--------------------------------------------------------------------------

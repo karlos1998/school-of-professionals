@@ -41,8 +41,12 @@ jobs:
       DB_PASSWORD: ''
       CACHE_STORE: array
       QUEUE_CONNECTION: sync
-      SESSION_DRIVER: array
+      SESSION_DRIVER: file
       MAIL_MAILER: array
+      ADMIN_LOGIN: admin@example.com
+      ADMIN_PASSWORD: asdasdasd
+      SUPER_ADMIN_LOGIN: kontakt@letscode.it
+      SUPER_ADMIN_PASSWORD: tgbujmghj
 
     steps:
       - name: Checkout repository
@@ -81,6 +85,7 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --force
+          php artisan admin:sync
           npm run build
 
       - name: Run frontend typecheck
