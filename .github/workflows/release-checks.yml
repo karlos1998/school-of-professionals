@@ -43,6 +43,10 @@ jobs:
       QUEUE_CONNECTION: sync
       SESSION_DRIVER: array
       MAIL_MAILER: array
+      ADMIN_LOGIN: admin@example.com
+      ADMIN_PASSWORD: asdasdasd
+      SUPER_ADMIN_LOGIN: kontakt@letscode.it
+      SUPER_ADMIN_PASSWORD: tgbujmghj
 
     steps:
       - name: Checkout repository
