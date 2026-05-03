@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue';
+import AdminPageLayout from '@/layouts/AdminPageLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import { adminExamsService } from '@/services/admin/adminExamsService';
 import type { ExamResource, OptionResource, PaginationResource } from '@/types/admin/resources';
@@ -49,11 +49,10 @@ const applyFilters = (): void => {
 };
 </script>
 <template>
-    <MainLayout>
-        <div class="d-flex justify-space-between mb-4">
-            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="$inertia.visit('/admin-panel')">Wróć do dashboardu</v-btn>
+    <AdminPageLayout>
+        <template #header-actions>
             <v-btn color="primary" @click="openCreate">Dodaj test</v-btn>
-        </div>
+        </template>
         <div class="d-flex ga-3 align-end mb-4">
             <v-select
                 v-model="filterAuthority"
@@ -105,5 +104,5 @@ const applyFilters = (): void => {
                 <v-card-actions><v-spacer /><v-btn @click="modal = false">Anuluj</v-btn><v-btn color="primary" @click="save">Zapisz</v-btn></v-card-actions>
             </v-card>
         </v-dialog>
-    </MainLayout>
+    </AdminPageLayout>
 </template>

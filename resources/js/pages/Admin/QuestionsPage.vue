@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue';
+import AdminPageLayout from '@/layouts/AdminPageLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import { adminQuestionsService } from '@/services/admin/adminQuestionsService';
 import type { AnswerResource, PaginationResource, QuestionResource } from '@/types/admin/resources';
@@ -30,12 +30,10 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
 };
 </script>
 <template>
-    <MainLayout>
-        <div class="d-flex justify-space-between align-center mb-4">
-            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="adminQuestionsService.backToTests">Wróć do testów</v-btn>
-            <h2>{{ props.exam.name }}</h2>
+    <AdminPageLayout :back-to="'/admin-panel/tests'" back-label="Wróć do testów" :title="props.exam.name">
+        <template #header-actions>
             <v-btn color="primary" @click="modal = true">Dodaj pytanie</v-btn>
-        </div>
+        </template>
         <v-data-table-server :items="props.questions.data" :headers="[{ title: '#', key: 'position' }, { title: 'Pytanie', key: 'content' }, { title: 'Akcje', key: 'actions', sortable: false }]" :items-length="pagination.total" :page="pagination.current_page" :items-per-page="pagination.per_page" @update:options="handleTableOptions">
             <template #item.actions="{ item }">
                 <v-btn size="small" variant="text" @click="openEdit(item)">Edytuj</v-btn>
@@ -59,5 +57,5 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
                 <v-card-actions><v-spacer /><v-btn @click="modal = false">Anuluj</v-btn><v-btn color="primary" @click="save">Zapisz</v-btn></v-card-actions>
             </v-card>
         </v-dialog>
-    </MainLayout>
+    </AdminPageLayout>
 </template>

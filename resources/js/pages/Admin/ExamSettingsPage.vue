@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue';
+import AdminPageLayout from '@/layouts/AdminPageLayout.vue';
 import { adminExamSettingsService } from '@/services/admin/adminExamSettingsService';
 import { useForm } from '@inertiajs/vue3';
 
@@ -16,10 +16,7 @@ const submit = (): void => {
 </script>
 
 <template>
-    <MainLayout>
-        <div class="d-flex justify-space-between align-center mb-4">
-            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="adminExamSettingsService.backToDashboard">Wróć do dashboardu</v-btn>
-        </div>
+    <AdminPageLayout>
         <v-card max-width="760" class="pa-4">
             <v-card-title>Ustawienia egzaminu</v-card-title>
             <v-card-text class="d-flex flex-column ga-3">
@@ -43,5 +40,5 @@ const submit = (): void => {
                 <v-btn color="primary" :loading="form.processing" @click="submit">Zapisz ustawienia</v-btn>
             </v-card-actions>
         </v-card>
-    </MainLayout>
+    </AdminPageLayout>
 </template>

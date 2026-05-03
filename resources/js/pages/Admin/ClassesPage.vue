@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue';
+import AdminPageLayout from '@/layouts/AdminPageLayout.vue';
 import { adminClassesService } from '@/services/admin/adminClassesService';
 import type { ExamClassResource, PaginationResource } from '@/types/admin/resources';
 import { useForm } from '@inertiajs/vue3';
@@ -36,11 +36,10 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
 </script>
 
 <template>
-    <MainLayout>
-        <div class="d-flex justify-space-between mb-4">
-            <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="$inertia.visit('/admin-panel')">Wróć do dashboardu</v-btn>
+    <AdminPageLayout>
+        <template #header-actions>
             <v-btn color="primary" @click="openCreate">Dodaj klasę</v-btn>
-        </div>
+        </template>
 
         <v-data-table-server
             :items="props.classes.data"
@@ -75,5 +74,5 @@ const handleTableOptions = (options: { page: number; itemsPerPage: number }): vo
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </MainLayout>
+    </AdminPageLayout>
 </template>
