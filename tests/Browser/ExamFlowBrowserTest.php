@@ -33,9 +33,9 @@ class ExamFlowBrowserTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser): void {
             $browser->visit('/egzaminy/udt')
-                ->waitForText('Katalog testow')
+                ->waitForText('Katalog testów')
                 ->click('div.test-card')
-                ->waitForText('Wybierz klase: Dzwigi budowlane')
+                ->waitForText('Wybierz klasę: Dzwigi budowlane')
                 ->clickLink('Klasa I')
                 ->waitForLocation('/egzaminy/udt/dzwigi-budowlane/i')
                 ->waitForText('Wybierz tryb testu')
@@ -72,6 +72,18 @@ class ExamFlowBrowserTest extends DuskTestCase
                 ->click('[data-testid="study-toggle-all"]')
                 ->waitForText('(Dzwigi budowlane) Pytanie 1. Jak postapic w obszarze: BHP i przygotowanie stanowiska?')
                 ->assertSee('Zwin wszystko');
+        });
+    }
+
+    public function test_user_can_enter_random_mode_from_mode_selection(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $browser->visit('/egzaminy/wit/maszyny-drogowe')
+                ->waitForText('Wybierz tryb testu')
+                ->clickLink('Losowo')
+                ->waitForLocation('/egzaminy/wit/maszyny-drogowe/tryb/random')
+                ->waitForText('Pytanie 1 /')
+                ->assertSee('Odpowiedziano:');
         });
     }
 }

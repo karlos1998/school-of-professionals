@@ -37,4 +37,19 @@ class AdminPanelBrowserTest extends DuskTestCase
                 ->waitFor('@admin-classes-add-button');
         });
     }
+
+    public function test_admin_can_log_out_from_panel(): void
+    {
+        $admin = User::query()->where('email', 'admin@example.com')->firstOrFail();
+
+        $this->browse(function (Browser $browser) use ($admin): void {
+            $browser->loginAs($admin)
+                ->visit('/admin-panel')
+                ->waitForLocation('/admin-panel')
+                ->logout()
+                ->visit('/admin-panel/login')
+                ->waitForLocation('/admin-panel/login')
+                ->assertSee('Logowanie do panelu admina');
+        });
+    }
 }
