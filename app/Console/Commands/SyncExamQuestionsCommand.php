@@ -89,17 +89,17 @@ class SyncExamQuestionsCommand extends Command
         $requested = array_values(array_filter((array) $this->option('source')));
 
         if ($requested !== []) {
-            return array_values(array_map(
+            return array_map(
                 static fn (string $source): string => SourceType::from(strtolower($source))->value,
                 $requested,
-            ));
+            );
         }
 
         if ($this->isNonInteractiveMode()) {
             return [SourceType::Wit->value, SourceType::Udt->value];
         }
 
-        return multiselect(
+        $selectedSources = multiselect(
             label: 'Wybierz źródła do synchronizacji',
             options: [
                 SourceType::Wit->value => SourceType::Wit->label(),
@@ -109,6 +109,11 @@ class SyncExamQuestionsCommand extends Command
             scroll: 5,
             required: true,
         );
+
+        return array_values(array_filter(
+            $selectedSources,
+            static fn (string|int $value): bool => is_string($value),
+        ));
     }
 
     /**

@@ -61,7 +61,13 @@ class ExamSyncQuestionScraper
                 continue;
             }
 
-            $titleNode = $xpath->query('.//h3', $questionNode)?->item(0);
+            $titleNodes = $xpath->query('.//h3', $questionNode);
+
+            if (! $titleNodes instanceof \DOMNodeList || $titleNodes->count() === 0) {
+                continue;
+            }
+
+            $titleNode = $titleNodes->item(0);
 
             if (! $titleNode instanceof \DOMNode) {
                 continue;
@@ -100,7 +106,8 @@ class ExamSyncQuestionScraper
             }
 
             $imageUrl = null;
-            $imageNode = $xpath->query('.//img[@src]', $questionNode)?->item(0);
+            $imageNodes = $xpath->query('.//img[@src]', $questionNode);
+            $imageNode = $imageNodes instanceof \DOMNodeList ? $imageNodes->item(0) : null;
             if ($imageNode instanceof \DOMElement) {
                 $imageSrc = trim((string) $imageNode->getAttribute('src'));
                 $imageUrl = $this->resolveImageUrl($imageSrc, $pageUrl);
@@ -147,7 +154,11 @@ class ExamSyncQuestionScraper
 
         if (Str::startsWith($imageSrc, '/_next/image?')) {
             parse_str((string) parse_url($imageSrc, PHP_URL_QUERY), $query);
-            $rawUrl = (string) ($query['url'] ?? '');
+            $rawUrl = $query['url'] ?? '';
+
+            if (! is_string($rawUrl)) {
+                return null;
+            }
 
             if ($rawUrl !== '') {
                 if (Str::startsWith($rawUrl, ['http://', 'https://'])) {

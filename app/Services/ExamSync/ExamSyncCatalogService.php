@@ -36,7 +36,17 @@ class ExamSyncCatalogService
         $items = [];
 
         foreach ($sections as $section) {
-            $titleNode = $xpath->query('.//h2', $section)?->item(0);
+            if (! $section instanceof \DOMNode) {
+                continue;
+            }
+
+            $titleNodes = $xpath->query('.//h2', $section);
+
+            if (! $titleNodes instanceof \DOMNodeList || $titleNodes->count() === 0) {
+                continue;
+            }
+
+            $titleNode = $titleNodes->item(0);
 
             if (! $titleNode instanceof \DOMNode) {
                 continue;
@@ -65,7 +75,7 @@ class ExamSyncCatalogService
                 $segments = array_values(array_filter(explode('/', $path)));
                 $slug = end($segments);
 
-                if (! is_string($slug) || $slug === '') {
+                if (! is_string($slug)) {
                     continue;
                 }
 
