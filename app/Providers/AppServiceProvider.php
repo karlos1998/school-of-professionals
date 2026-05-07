@@ -2,19 +2,20 @@
 
 namespace App\Providers;
 
-use App\Repositories\Contracts\AdminExamRepositoryInterface;
 use App\Repositories\Contracts\AdminClassRepositoryInterface;
+use App\Repositories\Contracts\AdminExamRepositoryInterface;
 use App\Repositories\Contracts\AdminLookupRepositoryInterface;
 use App\Repositories\Contracts\AdminQuestionRepositoryInterface;
-use App\Repositories\Contracts\ExamSettingsRepositoryInterface;
 use App\Repositories\Contracts\ExamRepositoryInterface;
-use App\Repositories\Eloquent\EloquentAdminExamRepository;
+use App\Repositories\Contracts\ExamSettingsRepositoryInterface;
 use App\Repositories\Eloquent\EloquentAdminClassRepository;
+use App\Repositories\Eloquent\EloquentAdminExamRepository;
 use App\Repositories\Eloquent\EloquentAdminLookupRepository;
 use App\Repositories\Eloquent\EloquentAdminQuestionRepository;
-use App\Repositories\Eloquent\EloquentExamSettingsRepository;
 use App\Repositories\Eloquent\EloquentExamRepository;
+use App\Repositories\Eloquent\EloquentExamSettingsRepository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,5 +33,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::shouldBeStrict(! $this->app->isProduction());
+
+        if (config('app.force_https')) {
+            URL::forceScheme('https');
+        }
     }
 }

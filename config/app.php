@@ -53,6 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'force_https' => (bool) env('FORCE_HTTPS', false),
     'admin_login' => env('ADMIN_LOGIN'),
     'admin_password' => env('ADMIN_PASSWORD'),
     'super_admin_login' => env('SUPER_ADMIN_LOGIN'),
