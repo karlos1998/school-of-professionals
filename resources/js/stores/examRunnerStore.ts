@@ -94,6 +94,8 @@ export const useExamRunnerStore = defineStore(
             examConfig.value = config;
 
             if (examKey.value === key && exam.value?.id === payload.id) {
+                exam.value = payload;
+
                 return;
             }
 
