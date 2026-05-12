@@ -108,7 +108,7 @@ import brandLogo from '@/assets/szkolazawodowcow-logo.svg';
 }
 
 .brand-logo {
-    width: 84px;
+    width: 104px;
     max-width: 45vw;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
 }
