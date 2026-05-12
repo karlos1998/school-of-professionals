@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ExamAuthority;
 use App\Models\ExamCategory;
 use Database\Seeders\ExamSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -39,6 +40,23 @@ class ExamFlowNavigationTest extends TestCase
                 ->where('authority.slug', 'wit')
                 ->where('homeUrl', route('exam-flow.welcome'))
                 ->has('tests')
+            );
+    }
+
+    public function test_it_uses_editable_authority_name_for_public_pages(): void
+    {
+        $this->seed(ExamSeeder::class);
+
+        ExamAuthority::query()
+            ->where('slug', 'wit')
+            ->update(['name' => 'Maszyny budowlane']);
+
+        $this->get('/egzaminy/wit')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->component('AuthorityTestsPage')
+                ->where('authority.name', 'Maszyny budowlane')
+                ->where('authority.slug', 'wit')
             );
     }
 

@@ -19,6 +19,12 @@ class AdminDashboardController extends Controller
                     'testId' => 'admin-module-tests',
                 ],
                 [
+                    'title' => 'Organy',
+                    'description' => 'Edycja nazw widocznych dla użytkowników',
+                    'url' => '/admin-panel/authorities',
+                    'testId' => 'admin-module-authorities',
+                ],
+                [
                     'title' => 'Klasy',
                     'description' => 'Zarządzanie klasami egzaminów',
                     'url' => '/admin-panel/classes',

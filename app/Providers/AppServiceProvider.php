@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\AdminAuthorityRepositoryInterface;
 use App\Repositories\Contracts\AdminCategoryRepositoryInterface;
 use App\Repositories\Contracts\AdminClassRepositoryInterface;
 use App\Repositories\Contracts\AdminExamRepositoryInterface;
@@ -9,6 +10,7 @@ use App\Repositories\Contracts\AdminLookupRepositoryInterface;
 use App\Repositories\Contracts\AdminQuestionRepositoryInterface;
 use App\Repositories\Contracts\ExamRepositoryInterface;
 use App\Repositories\Contracts\ExamSettingsRepositoryInterface;
+use App\Repositories\Eloquent\EloquentAdminAuthorityRepository;
 use App\Repositories\Eloquent\EloquentAdminCategoryRepository;
 use App\Repositories\Eloquent\EloquentAdminClassRepository;
 use App\Repositories\Eloquent\EloquentAdminExamRepository;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(ExamRepositoryInterface::class, EloquentExamRepository::class);
         $this->app->bind(AdminExamRepositoryInterface::class, EloquentAdminExamRepository::class);
+        $this->app->bind(AdminAuthorityRepositoryInterface::class, EloquentAdminAuthorityRepository::class);
         $this->app->bind(AdminClassRepositoryInterface::class, EloquentAdminClassRepository::class);
         $this->app->bind(AdminCategoryRepositoryInterface::class, EloquentAdminCategoryRepository::class);
         $this->app->bind(AdminQuestionRepositoryInterface::class, EloquentAdminQuestionRepository::class);

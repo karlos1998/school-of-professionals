@@ -50,3 +50,10 @@ export type ExamCategoryResource = {
     is_favorite: boolean;
     exams_count: number;
 };
+
+export type ExamAuthorityResource = {
+    id: number;
+    name: string;
+    slug: string;
+    exams_count: number;
+};

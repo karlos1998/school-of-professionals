@@ -21,7 +21,8 @@ it('shows dashboard modules for authenticated admin', function (): void {
         ->assertInertia(fn ($page) => $page
             ->component('Admin/DashboardPage')
             ->where('modules.0.title', 'Testy')
-            ->where('modules.1.title', 'Klasy')
-            ->where('modules.2.title', 'Kategorie')
+            ->where('modules.1.title', 'Organy')
+            ->where('modules.2.title', 'Klasy')
+            ->where('modules.3.title', 'Kategorie')
         );
 });
