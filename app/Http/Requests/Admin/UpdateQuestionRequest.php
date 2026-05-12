@@ -27,6 +27,7 @@ class UpdateQuestionRequest extends FormRequest
             'position' => ['required', 'integer', 'min:1'],
             'content' => ['required', 'string'],
             'explanation' => ['nullable', 'string'],
+            'image_path' => ['nullable', 'string', 'max:500'],
             'answers' => ['required', 'array', 'min:2'],
             'answers.*.content' => ['required', 'string'],
             'answers.*.is_correct' => ['required', 'boolean'],

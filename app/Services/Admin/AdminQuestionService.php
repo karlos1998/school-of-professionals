@@ -16,6 +16,7 @@ class AdminQuestionService
     public function __construct(
         public AdminExamRepositoryInterface $examRepository,
         public AdminQuestionRepositoryInterface $questionRepository,
+        public QuestionImageService $questionImageService,
     ) {}
 
     /** @return array<string, mixed> */
@@ -23,7 +24,7 @@ class AdminQuestionService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel(Exam::class, [$examId]);
+            throw (new ModelNotFoundException)->setModel(Exam::class, [$examId]);
         }
 
         $questions = $this->questionRepository->paginateForExam($examId, $perPage);
@@ -42,10 +43,11 @@ class AdminQuestionService
     {
         $exam = $this->examRepository->findById($examId);
         if ($exam === null) {
-            throw (new ModelNotFoundException())->setModel(Exam::class, [$examId]);
+            throw (new ModelNotFoundException)->setModel(Exam::class, [$examId]);
         }
 
         DB::transaction(function () use ($exam, $data): void {
+            $data = $this->questionImageService->prepareForCreate($exam, $data);
             $question = $this->questionRepository->createForExam($exam->id, $data);
             $this->questionRepository->replaceAnswers($question, $data['answers']);
         });
@@ -56,10 +58,16 @@ class AdminQuestionService
     {
         $question = $this->questionRepository->findById($questionId);
         if ($question === null || $question->exam_id !== $examId) {
-            throw (new ModelNotFoundException())->setModel(Question::class, [$questionId]);
+            throw (new ModelNotFoundException)->setModel(Question::class, [$questionId]);
         }
 
-        DB::transaction(function () use ($question, $data): void {
+        $exam = $this->examRepository->findById($examId);
+        if ($exam === null) {
+            throw (new ModelNotFoundException)->setModel(Exam::class, [$examId]);
+        }
+
+        DB::transaction(function () use ($exam, $question, $data): void {
+            $data = $this->questionImageService->prepareForUpdate($exam, $question, $data);
             $this->questionRepository->update($question, $data);
             $this->questionRepository->replaceAnswers($question, $data['answers']);
         });
@@ -69,9 +77,12 @@ class AdminQuestionService
     {
         $question = $this->questionRepository->findById($questionId);
         if ($question === null || $question->exam_id !== $examId) {
-            throw (new ModelNotFoundException())->setModel(Question::class, [$questionId]);
+            throw (new ModelNotFoundException)->setModel(Question::class, [$questionId]);
         }
 
-        $this->questionRepository->delete($question);
+        DB::transaction(function () use ($question): void {
+            $this->questionImageService->deleteForQuestion($question);
+            $this->questionRepository->delete($question);
+        });
     }
 }

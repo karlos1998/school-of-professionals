@@ -25,6 +25,8 @@ export type QuestionResource = {
     id: number;
     position: number;
     content: string;
+    image_path: string | null;
+    image_url: string | null;
     explanation: string | null;
     answers: AnswerResource[];
 };

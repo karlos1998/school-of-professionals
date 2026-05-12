@@ -27,6 +27,7 @@ class EloquentAdminQuestionRepository extends BaseEloquentRepository implements 
             'exam_id' => $examId,
             'position' => $data['position'],
             'content' => $data['content'],
+            'image_path' => $data['image_path'] ?? null,
             'explanation' => $data['explanation'] ?? null,
         ]);
     }
@@ -41,6 +42,7 @@ class EloquentAdminQuestionRepository extends BaseEloquentRepository implements 
         $question->update([
             'position' => $data['position'],
             'content' => $data['content'],
+            'image_path' => $data['image_path'] ?? null,
             'explanation' => $data['explanation'] ?? null,
         ]);
 

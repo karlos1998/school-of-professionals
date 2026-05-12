@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminExamController;
-use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminExamController;
 use App\Http\Controllers\Admin\AdminExamSettingsController;
+use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\Auth\AdminLoginPageController;
 use App\Http\Controllers\Admin\Auth\AdminSessionController;
+use App\Http\Controllers\Admin\TemporaryUploadController;
 use App\Http\Controllers\ExamFlow\AuthorityTestsPageController;
 use App\Http\Controllers\ExamFlow\ExamSessionPageController;
 use App\Http\Controllers\ExamFlow\ModeSelectionPageController;
@@ -39,6 +40,8 @@ Route::prefix('/admin-panel')->name('admin.')->group(function () {
         Route::post('/tests/{examId}/questions', [AdminQuestionController::class, 'store'])->name('tests.questions.store');
         Route::put('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'update'])->name('tests.questions.update');
         Route::delete('/tests/{examId}/questions/{questionId}', [AdminQuestionController::class, 'destroy'])->name('tests.questions.destroy');
+        Route::post('/api/uploads', [TemporaryUploadController::class, 'store'])->name('uploads.store');
+        Route::delete('/api/uploads', [TemporaryUploadController::class, 'destroy'])->name('uploads.destroy');
     });
 });
 
