@@ -25,6 +25,16 @@ class AdminAuthorityService
         ];
     }
 
+    /** @param array{name:string,slug:string} $data */
+    public function create(array $data): void
+    {
+        $this->authorityRepository->create([
+            'name' => $data['name'],
+            'slug' => $data['slug'],
+            'sort_order' => $this->authorityRepository->nextSortOrder(),
+        ]);
+    }
+
     /** @param array{name:string} $data */
     public function update(int $authorityId, array $data): void
     {
@@ -36,5 +46,20 @@ class AdminAuthorityService
         $this->authorityRepository->update($authority, [
             'name' => $data['name'],
         ]);
+    }
+
+    /** @param list<int> $orderedIds */
+    public function reorder(array $orderedIds): void
+    {
+        $existingIds = ExamAuthority::query()
+            ->whereIn('id', $orderedIds)
+            ->pluck('id')
+            ->all();
+
+        if (count($existingIds) !== count($orderedIds)) {
+            throw (new ModelNotFoundException)->setModel(ExamAuthority::class, array_values(array_diff($orderedIds, $existingIds)));
+        }
+
+        $this->authorityRepository->reorder($orderedIds);
     }
 }

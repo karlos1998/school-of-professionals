@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ExamAuthority;
 use Database\Seeders\ExamSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -22,6 +23,21 @@ class ExamFlowRoutingTest extends TestCase
                 ->has('authorities', 2)
                 ->where('authorities.0.slug', 'udt')
                 ->where('authorities.1.slug', 'wit'));
+    }
+
+    public function test_it_renders_welcome_authorities_using_admin_order(): void
+    {
+        $this->seed(ExamSeeder::class);
+
+        ExamAuthority::query()->where('slug', 'wit')->update(['sort_order' => 1]);
+        ExamAuthority::query()->where('slug', 'udt')->update(['sort_order' => 2]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->component('WelcomePage')
+                ->where('authorities.0.slug', 'wit')
+                ->where('authorities.1.slug', 'udt'));
     }
 
     public function test_it_renders_mode_selection_for_wit_test_without_class(): void

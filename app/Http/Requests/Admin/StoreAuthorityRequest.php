@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateAuthorityRequest extends FormRequest
+class StoreAuthorityRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,11 +17,13 @@ class UpdateAuthorityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
+            'name' => ['required', 'string', 'max:40', Rule::unique('exam_authorities', 'name')],
+            'slug' => [
                 'required',
                 'string',
-                'max:40',
-                Rule::unique('exam_authorities', 'name')->ignore($this->route('authorityId')),
+                'max:60',
+                'regex:/^[a-z0-9-]+$/',
+                Rule::unique('exam_authorities', 'slug'),
             ],
         ];
     }

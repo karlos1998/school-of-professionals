@@ -13,7 +13,8 @@ class EloquentExamRepository implements ExamRepositoryInterface
     public function getExamAuthorities(): Collection
     {
         return ExamAuthority::query()
-            ->select(['id', 'name', 'slug'])
+            ->select(['id', 'name', 'slug', 'sort_order'])
+            ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
     }

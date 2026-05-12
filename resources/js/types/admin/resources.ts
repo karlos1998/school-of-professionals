@@ -55,5 +55,6 @@ export type ExamAuthorityResource = {
     id: number;
     name: string;
     slug: string;
+    sort_order: number;
     exams_count: number;
 };

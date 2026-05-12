@@ -33,6 +33,8 @@ Route::prefix('/admin-panel')->name('admin.')->group(function () {
         Route::put('/tests/{examId}', [AdminExamController::class, 'update'])->name('tests.update');
         Route::delete('/tests/{examId}', [AdminExamController::class, 'destroy'])->name('tests.destroy');
         Route::get('/authorities', [AdminAuthorityController::class, 'index'])->name('authorities.index');
+        Route::post('/authorities', [AdminAuthorityController::class, 'store'])->name('authorities.store');
+        Route::put('/authorities/order', [AdminAuthorityController::class, 'reorder'])->name('authorities.reorder');
         Route::put('/authorities/{authorityId}', [AdminAuthorityController::class, 'update'])->name('authorities.update');
         Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');

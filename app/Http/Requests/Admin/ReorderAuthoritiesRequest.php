@@ -4,9 +4,8 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateAuthorityRequest extends FormRequest
+class ReorderAuthoritiesRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,12 +16,8 @@ class UpdateAuthorityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:40',
-                Rule::unique('exam_authorities', 'name')->ignore($this->route('authorityId')),
-            ],
+            'ordered_ids' => ['required', 'array', 'min:1'],
+            'ordered_ids.*' => ['required', 'integer', 'distinct', 'exists:exam_authorities,id'],
         ];
     }
 }
