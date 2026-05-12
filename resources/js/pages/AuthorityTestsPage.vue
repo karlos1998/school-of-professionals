@@ -70,27 +70,36 @@ const openClassTest = (classItem: TestClass): void => {
                         <v-btn :href="homeUrl" prepend-icon="mdi-arrow-left" variant="outlined">Powrót</v-btn>
                     </v-card-title>
                     <v-card-text>
-                        <v-row>
-                            <v-col v-for="test in tests" :key="test.slug" cols="12" md="6" lg="4">
-                                <v-sheet class="test-card" border rounded="lg" @click="openTest(test)">
-                                    <div class="d-flex justify-space-between align-center ga-2">
-                                        <h3 class="text-subtitle-1 font-weight-bold">{{ test.name }}</h3>
+                        <v-list class="test-list bg-transparent">
+                            <v-list-item
+                                v-for="test in tests"
+                                :key="test.slug"
+                                class="test-list-item"
+                                rounded="lg"
+                                @click="openTest(test)"
+                            >
+                                <v-list-item-title class="font-weight-bold">
+                                    {{ test.name }}
+                                </v-list-item-title>
+                                <v-list-item-subtitle v-if="test.description" class="mt-1">
+                                    {{ test.description }}
+                                </v-list-item-subtitle>
+                                <template #append>
+                                    <div class="test-list-item__meta">
                                         <v-chip size="small" color="primary" variant="tonal">{{ test.questionCount }} pyt.</v-chip>
+                                        <v-chip
+                                            v-if="test.hasClassSelection"
+                                            size="small"
+                                            color="secondary"
+                                            variant="flat"
+                                        >
+                                            Klasy
+                                        </v-chip>
+                                        <v-icon icon="mdi-chevron-right" />
                                     </div>
-                                    <p class="text-body-2 text-medium-emphasis mt-2">{{ test.description }}</p>
-                                    <v-chip
-                                        v-if="test.hasClassSelection"
-                                        class="mt-3"
-                                        size="small"
-                                        color="secondary"
-                                        variant="flat"
-                                        prepend-icon="mdi-shape-outline"
-                                    >
-                                        Wybierz klasę
-                                    </v-chip>
-                                </v-sheet>
-                            </v-col>
-                        </v-row>
+                                </template>
+                            </v-list-item>
+                        </v-list>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -139,19 +148,30 @@ const openClassTest = (classItem: TestClass): void => {
         inset 0 0 0 1px rgba(255, 255, 255, 0.84);
 }
 
-.test-card {
-    padding: 16px;
-    min-height: 150px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid rgba(214, 169, 62, 0.45);
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.97), rgba(250, 246, 236, 0.82));
+.test-list {
+    display: grid;
+    gap: 2px;
 }
 
-.test-card:hover {
-    border-color: rgba(188, 145, 44, 0.88);
-    box-shadow: 0 12px 26px rgba(19, 31, 45, 0.12);
-    transform: translateY(-2px) scale(1.01);
+.test-list-item {
+    border-bottom: 1px solid rgba(69, 71, 77, 0.12);
+    cursor: pointer;
+    min-height: 72px;
+    padding-inline: 8px 4px;
+    transition: background-color 0.16s ease;
+}
+
+.test-list-item:hover {
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.test-list-item__meta {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-left: 16px;
 }
 
 .class-dialog {
@@ -182,8 +202,9 @@ const openClassTest = (classItem: TestClass): void => {
 }
 
 @media (max-width: 700px) {
-    .test-card {
-        min-height: auto;
+    .test-list-item__meta {
+        justify-content: flex-start;
+        padding-left: 0;
     }
 }
 </style>
