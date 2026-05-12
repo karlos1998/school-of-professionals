@@ -43,3 +43,9 @@ export type ExamClassResource = {
     name: string;
     exams_count: number;
 };
+
+export type ExamCategoryResource = {
+    id: number;
+    name: string;
+    exams_count: number;
+};

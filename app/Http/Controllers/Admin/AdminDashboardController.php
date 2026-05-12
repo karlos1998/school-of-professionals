@@ -25,6 +25,12 @@ class AdminDashboardController extends Controller
                     'testId' => 'admin-module-classes',
                 ],
                 [
+                    'title' => 'Kategorie',
+                    'description' => 'Zarządzanie kategoriami testów',
+                    'url' => '/admin-panel/categories',
+                    'testId' => 'admin-module-categories',
+                ],
+                [
                     'title' => 'Ustawienia egzaminu',
                     'description' => 'Konfiguracja liczby pytań i progu zaliczenia',
                     'url' => '/admin-panel/exam-settings',

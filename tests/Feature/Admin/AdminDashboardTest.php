@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
@@ -21,5 +22,6 @@ it('shows dashboard modules for authenticated admin', function (): void {
             ->component('Admin/DashboardPage')
             ->where('modules.0.title', 'Testy')
             ->where('modules.1.title', 'Klasy')
+            ->where('modules.2.title', 'Kategorie')
         );
 });

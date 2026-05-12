@@ -26,7 +26,7 @@ it('shows exam settings module on admin dashboard', function (): void {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('Admin/DashboardPage')
-            ->where('modules.2.title', 'Ustawienia egzaminu')
+            ->where('modules.3.title', 'Ustawienia egzaminu')
         );
 });
 

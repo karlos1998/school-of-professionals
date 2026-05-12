@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminExamController;
@@ -30,6 +31,10 @@ Route::prefix('/admin-panel')->name('admin.')->group(function () {
         Route::post('/tests', [AdminExamController::class, 'store'])->name('tests.store');
         Route::put('/tests/{examId}', [AdminExamController::class, 'update'])->name('tests.update');
         Route::delete('/tests/{examId}', [AdminExamController::class, 'destroy'])->name('tests.destroy');
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{categoryId}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{categoryId}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
         Route::get('/classes', [AdminClassController::class, 'index'])->name('classes.index');
         Route::post('/classes', [AdminClassController::class, 'store'])->name('classes.store');
         Route::put('/classes/{classId}', [AdminClassController::class, 'update'])->name('classes.update');
