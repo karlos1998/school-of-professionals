@@ -26,16 +26,17 @@ class AdminCategoryService
         ];
     }
 
-    /** @param array{name:string} $data */
+    /** @param array{name:string,is_favorite?:bool} $data */
     public function create(array $data): void
     {
         $this->categoryRepository->create([
             'name' => $data['name'],
             'slug' => $this->generateUniqueSlug($data['name']),
+            'is_favorite' => (bool) ($data['is_favorite'] ?? false),
         ]);
     }
 
-    /** @param array{name:string} $data */
+    /** @param array{name:string,is_favorite?:bool} $data */
     public function update(int $categoryId, array $data): void
     {
         $category = $this->categoryRepository->findById($categoryId);
@@ -46,6 +47,7 @@ class AdminCategoryService
         $this->categoryRepository->update($category, [
             'name' => $data['name'],
             'slug' => $this->generateUniqueSlug($data['name'], $categoryId),
+            'is_favorite' => (bool) ($data['is_favorite'] ?? false),
         ]);
     }
 

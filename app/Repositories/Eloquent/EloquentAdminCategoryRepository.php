@@ -14,6 +14,7 @@ class EloquentAdminCategoryRepository extends BaseEloquentRepository implements 
         return $this->paginateQuery(
             ExamCategory::query()
                 ->withCount('exams')
+                ->orderByDesc('is_favorite')
                 ->orderBy('name'),
             $perPage,
         );

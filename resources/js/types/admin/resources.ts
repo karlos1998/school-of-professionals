@@ -47,5 +47,6 @@ export type ExamClassResource = {
 export type ExamCategoryResource = {
     id: number;
     name: string;
+    is_favorite: boolean;
     exams_count: number;
 };

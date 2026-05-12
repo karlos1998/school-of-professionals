@@ -24,20 +24,23 @@ class EloquentExamRepository implements ExamRepositoryInterface
         return Exam::query()
             ->with([
                 'authority:id,name,slug',
-                'category:id,name,slug',
+                'category:id,name,slug,is_favorite',
                 'examClass:id,name,slug',
             ])
             ->withCount('questions')
             ->whereHas('authority', fn ($query) => $query->where('slug', $authoritySlug))
-            ->orderBy('name')
+            ->join('exam_categories', 'exams.exam_category_id', '=', 'exam_categories.id')
+            ->orderByDesc('exam_categories.is_favorite')
+            ->orderBy('exam_categories.name')
+            ->orderBy('exams.name')
             ->get([
-                'id',
-                'exam_authority_id',
-                'exam_category_id',
-                'exam_class_id',
-                'name',
-                'slug',
-                'description',
+                'exams.id',
+                'exams.exam_authority_id',
+                'exams.exam_category_id',
+                'exams.exam_class_id',
+                'exams.name',
+                'exams.slug',
+                'exams.description',
             ]);
     }
 

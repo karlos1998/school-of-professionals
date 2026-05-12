@@ -24,7 +24,7 @@ class AdminCategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        /** @var array{name:string} $data */
+        /** @var array{name:string,is_favorite?:bool} $data */
         $data = $request->validated();
         $this->adminCategoryService->create($data);
 
@@ -33,7 +33,7 @@ class AdminCategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, string $categoryId): RedirectResponse
     {
-        /** @var array{name:string} $data */
+        /** @var array{name:string,is_favorite?:bool} $data */
         $data = $request->validated();
         $this->adminCategoryService->update((int) $categoryId, $data);
 

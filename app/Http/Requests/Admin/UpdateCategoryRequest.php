@@ -17,6 +17,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:120'],
+            'is_favorite' => ['required', 'boolean'],
         ];
     }
 }

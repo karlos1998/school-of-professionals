@@ -12,10 +12,10 @@ interface AdminCategoryRepositoryInterface
 
     public function findById(int $categoryId): ?ExamCategory;
 
-    /** @param array{name:string,slug:string} $data */
+    /** @param array{name:string,slug:string,is_favorite:bool} $data */
     public function create(array $data): ExamCategory;
 
-    /** @param array{name:string,slug:string} $data */
+    /** @param array{name:string,slug:string,is_favorite:bool} $data */
     public function update(ExamCategory $category, array $data): ExamCategory;
 
     public function slugExists(string $slug, ?int $ignoreId = null): bool;

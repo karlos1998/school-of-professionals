@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ExamCategory;
 use Database\Seeders\ExamSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -38,6 +39,22 @@ class ExamFlowNavigationTest extends TestCase
                 ->where('authority.slug', 'wit')
                 ->where('homeUrl', route('exam-flow.welcome'))
                 ->has('tests')
+            );
+    }
+
+    public function test_it_lists_favorite_authority_tests_first(): void
+    {
+        $this->seed(ExamSeeder::class);
+
+        ExamCategory::query()
+            ->where('slug', 'wozki-jezdniowe')
+            ->update(['is_favorite' => true]);
+
+        $this->get('/egzaminy/udt')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->component('AuthorityTestsPage')
+                ->where('tests.0.slug', 'wozki-jezdniowe')
             );
     }
 }
